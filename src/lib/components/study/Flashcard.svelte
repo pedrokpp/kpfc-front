@@ -16,7 +16,7 @@
 	const isCloze = $derived(cardType === 'cloze');
 </script>
 
-<div class="w-full perspective-1000">
+<div class="w-full perspective-1000 overflow-hidden">
 	<button
 		onclick={revealed ? undefined : onreveal}
 		aria-label={revealed ? undefined : 'Reveal answer'}

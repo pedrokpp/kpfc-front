@@ -27,12 +27,12 @@
 
 <div class="flex flex-col gap-3">
 	<p class="text-sm text-text/60 text-center font-medium">How well did you recall this?</p>
-	<div class="grid grid-cols-3 sm:grid-cols-6 gap-2">
+	<div class="grid grid-cols-3 sm:grid-cols-6 gap-2 min-w-0 w-full">
 		{#each ratings as rating}
 			<button
 				onclick={() => onrate(rating.value)}
 				disabled={loading}
-				class="flex flex-col items-center gap-1 py-3 px-2 rounded-lg border text-center transition-colors disabled:opacity-50 disabled:pointer-events-none {colors[rating.value]}"
+				class="flex flex-col items-center gap-1 py-3 px-2 rounded-lg border text-center transition-colors disabled:opacity-50 disabled:pointer-events-none min-w-0 overflow-hidden {colors[rating.value]}"
 			>
 				<span class="text-xl font-bold text-text">{rating.value}</span>
 				<span class="text-xs font-medium text-text/70">{rating.label}</span>
