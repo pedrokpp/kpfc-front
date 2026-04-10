@@ -2,6 +2,7 @@ import { api } from './client';
 import type { Card } from '$lib/types';
 
 export interface CardInput {
+	title?: string;
 	front: string;
 	back: string;
 	card_type?: 'basic' | 'cloze';

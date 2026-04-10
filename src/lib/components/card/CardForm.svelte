@@ -16,6 +16,7 @@
 	let { card, loading = false, onsubmit, oncancel }: Props = $props();
 
 	let cardType = $state<'basic' | 'cloze'>(untrack(() => card?.card_type ?? 'basic'));
+	let title = $state(untrack(() => card?.title ?? ''));
 	let front = $state(untrack(() => card?.front ?? ''));
 	let back = $state(untrack(() => card?.back ?? ''));
 	let extra = $state(untrack(() => card?.extra ?? ''));
@@ -24,6 +25,7 @@
 	function handleSubmit(e: SubmitEvent) {
 		e.preventDefault();
 		const data: CardInput = { front, back };
+		if (title.trim()) data.title = title.trim();
 		if (cardType === 'cloze') {
 			data.card_type = 'cloze';
 			const match = front.match(/\{\{c(\d+)::/);
@@ -69,6 +71,18 @@
 </script>
 
 <form onsubmit={handleSubmit} class="flex flex-col gap-4">
+	<!-- Title (optional) -->
+	<div class="flex flex-col gap-1">
+		<label for="card-title" class="text-sm font-medium text-text/80">Title <span class="text-text/30 font-normal">(optional)</span></label>
+		<input
+			id="card-title"
+			type="text"
+			bind:value={title}
+			placeholder="Short label for this card"
+			class="px-3 py-2 rounded-md border border-secondary/30 bg-background text-text text-sm placeholder:text-text/40 focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-colors"
+		/>
+	</div>
+
 	<!-- Card type toggle -->
 	<div class="flex gap-1 p-1 bg-secondary/10 rounded-lg w-fit">
 		<button

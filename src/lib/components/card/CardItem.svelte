@@ -13,11 +13,17 @@
 	const nextReview = $derived(new Date(card.next_review_at));
 </script>
 
-<article class="group bg-background border border-secondary/20 rounded-lg p-4 flex flex-col gap-2 hover:border-secondary/40 transition-colors">
+<article
+	onclick={() => onedit?.()}
+	role="button"
+	tabindex="0"
+	onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') onedit?.(); }}
+	class="group bg-background border border-secondary/20 rounded-lg p-4 flex flex-col gap-2 hover:border-secondary/40 transition-colors cursor-pointer"
+>
 	<div class="flex items-start justify-between gap-2">
 		<div class="flex flex-col gap-1.5 min-w-0 flex-1">
 			<div class="flex items-start gap-1.5">
-				<p class="text-sm font-medium text-text line-clamp-2">{card.front}</p>
+				<p class="text-sm font-medium text-text line-clamp-2">{card.title || card.front}</p>
 				{#if card.card_type === 'cloze'}
 					<span class="shrink-0 text-xs bg-secondary/20 text-secondary px-1.5 py-0.5 rounded">cloze</span>
 				{/if}
@@ -27,7 +33,7 @@
 		<div class="flex gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
 			{#if onedit}
 				<button
-					onclick={onedit}
+					onclick={(e) => { e.stopPropagation(); onedit?.(); }}
 					aria-label="Edit card"
 					class="p-1.5 rounded-md text-text/40 hover:text-text hover:bg-secondary/20 transition-colors"
 				>
@@ -38,7 +44,7 @@
 			{/if}
 			{#if ondelete}
 				<button
-					onclick={ondelete}
+					onclick={(e) => { e.stopPropagation(); ondelete?.(); }}
 					aria-label="Delete card"
 					class="p-1.5 rounded-md text-text/40 hover:text-accent hover:bg-accent/10 transition-colors"
 				>

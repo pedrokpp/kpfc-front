@@ -22,6 +22,7 @@ export type CardType = 'basic' | 'cloze';
 export interface Card {
 	id: number;
 	deck_id: number;
+	title: string;
 	front: string;
 	back: string;
 	card_type: CardType;
@@ -49,6 +50,7 @@ export interface Toast {
 
 export interface MediaObject {
 	id: number;
+	public_id: string;
 	filename: string;
 	content_type: string;
 	size: number;
