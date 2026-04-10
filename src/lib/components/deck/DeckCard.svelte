@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import type { Deck } from '$lib/types';
 
 	interface Props {
@@ -10,10 +11,16 @@
 	let { deck, onedit, ondelete }: Props = $props();
 </script>
 
-<article class="group bg-background border border-secondary/20 rounded-xl p-5 flex flex-col gap-3 hover:border-secondary/40 transition-colors">
+<article
+	onclick={() => goto(`/decks/${deck.id}`)}
+	role="link"
+	tabindex="0"
+	onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') goto(`/decks/${deck.id}`); }}
+	class="group bg-background border border-secondary/20 rounded-xl p-5 flex flex-col gap-3 hover:border-secondary/40 transition-colors cursor-pointer"
+>
 	<div class="flex items-start justify-between gap-2">
 		<div class="flex flex-col gap-1 min-w-0">
-			<a href="/decks/{deck.id}" class="font-semibold text-text hover:text-primary transition-colors truncate">
+			<a href="/decks/{deck.id}" onclick={(e) => e.stopPropagation()} class="font-semibold text-text hover:text-primary transition-colors truncate">
 				{deck.title}
 			</a>
 			{#if deck.description}
@@ -41,7 +48,7 @@
 			<div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
 				{#if onedit}
 					<button
-						onclick={onedit}
+						onclick={(e) => { e.stopPropagation(); onedit?.(); }}
 						aria-label="Edit deck"
 						class="p-1.5 rounded-md text-text/40 hover:text-text hover:bg-secondary/20 transition-colors"
 					>
@@ -52,7 +59,7 @@
 				{/if}
 				{#if ondelete}
 					<button
-						onclick={ondelete}
+						onclick={(e) => { e.stopPropagation(); ondelete?.(); }}
 						aria-label="Delete deck"
 						class="p-1.5 rounded-md text-text/40 hover:text-accent hover:bg-accent/10 transition-colors"
 					>
