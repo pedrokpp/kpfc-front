@@ -13,8 +13,8 @@
 
 <header class="border-b border-secondary/20 bg-background/90 backdrop-blur-sm sticky top-0 z-40">
 	<nav class="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between gap-4">
-		<a href={$auth.token ? '/dashboard' : '/'} class="text-primary font-bold text-lg tracking-tight">
-			KPFC
+		<a href={$auth.token ? '/dashboard' : '/'} class="text-primary font-bold text-lg tracking-tight font-go">
+			kpfc
 		</a>
 
 		<div class="flex items-center gap-2">

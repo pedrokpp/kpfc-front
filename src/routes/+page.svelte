@@ -10,7 +10,7 @@
 
 <div class="flex flex-col items-center justify-center min-h-[60vh] text-center gap-6">
 	<div class="flex flex-col gap-2">
-		<h1 class="text-4xl font-bold text-primary">KPFC</h1>
+		<h1 class="text-4xl font-bold text-primary">kpfc</h1>
 		<p class="text-text/60 text-lg">Spaced repetition flashcards, built to last.</p>
 	</div>
 	<p class="text-text/50 text-sm max-w-sm">

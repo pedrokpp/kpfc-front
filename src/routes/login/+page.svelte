@@ -33,7 +33,7 @@
 	}
 </script>
 
-<svelte:head><title>Login — KPFC</title></svelte:head>
+<svelte:head><title>Login — kpfc</title></svelte:head>
 
 <div class="max-w-sm mx-auto mt-12 flex flex-col gap-6">
 	<div class="text-center">

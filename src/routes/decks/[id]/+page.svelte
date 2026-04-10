@@ -108,7 +108,7 @@
 	const dueCount = $derived(cards.filter((c) => new Date(c.next_review_at) <= new Date()).length);
 </script>
 
-<svelte:head><title>{deck?.title ?? 'Deck'} — KPFC</title></svelte:head>
+<svelte:head><title>{deck?.title ?? 'Deck'} — kpfc</title></svelte:head>
 
 {#if loading}
 	<div class="flex flex-col gap-4">

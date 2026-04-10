@@ -27,7 +27,7 @@
 			// Auto-login after register
 			const res = await authApi.login(email, password);
 			auth.login(res.token, res.user);
-			toasts.success('Account created! Welcome to KPFC.');
+			toasts.success('Account created! Welcome to kpfc.');
 			goto('/dashboard');
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Registration failed.';
@@ -37,7 +37,7 @@
 	}
 </script>
 
-<svelte:head><title>Register — KPFC</title></svelte:head>
+<svelte:head><title>Register — kpfc</title></svelte:head>
 
 <div class="max-w-sm mx-auto mt-12 flex flex-col gap-6">
 	<div class="text-center">

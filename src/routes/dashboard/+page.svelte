@@ -80,7 +80,7 @@
 	}
 </script>
 
-<svelte:head><title>My Decks — KPFC</title></svelte:head>
+<svelte:head><title>My Decks — kpfc</title></svelte:head>
 
 <div class="flex flex-col gap-6">
 	<div class="flex items-center justify-between">

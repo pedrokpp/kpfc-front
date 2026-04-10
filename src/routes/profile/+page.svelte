@@ -31,7 +31,7 @@
 	}
 </script>
 
-<svelte:head><title>Profile — KPFC</title></svelte:head>
+<svelte:head><title>Profile — kpfc</title></svelte:head>
 
 {#if $auth.user}
 	<div class="max-w-md flex flex-col gap-6">

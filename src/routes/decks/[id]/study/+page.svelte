@@ -73,7 +73,7 @@
 	const progress = $derived(cards.length > 0 ? ((currentIndex) / cards.length) * 100 : 0);
 </script>
 
-<svelte:head><title>Study — {deck?.title ?? 'KPFC'}</title></svelte:head>
+<svelte:head><title>Study — {deck?.title ?? 'kpfc'}</title></svelte:head>
 
 <div class="max-w-2xl mx-auto flex flex-col gap-6">
 
@@ -104,7 +104,7 @@
 		</div>
 
 	{:else if phase === 'studying' && currentCard}
-		<div class="flex flex-col gap-5">
+		<div class="flex flex-col gap-5 min-w-0">
 			<!-- Progress -->
 			<div class="flex items-center gap-3">
 				<a href="/decks/{deckId}" class="text-text/40 hover:text-text/70 text-sm transition-colors shrink-0">

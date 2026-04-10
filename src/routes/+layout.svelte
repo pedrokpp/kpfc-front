@@ -12,7 +12,7 @@
 </script>
 
 <svelte:head>
-	<title>KPFC — Flashcards</title>
+	<title>kpfc — Flashcards</title>
 </svelte:head>
 
 <div class="min-h-screen flex flex-col bg-background text-text">
