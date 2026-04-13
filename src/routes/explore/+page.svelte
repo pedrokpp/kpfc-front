@@ -3,6 +3,7 @@
 	import { auth } from '$lib/stores/auth';
 	import { toasts } from '$lib/stores/toast';
 	import { decksApi } from '$lib/api/decks';
+	import { t } from '$lib/i18n';
 	import type { Deck } from '$lib/types';
 	import EmptyState from '$lib/components/ui/EmptyState.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
@@ -19,7 +20,7 @@
 		try {
 			decks = await decksApi.listPublic(sort || undefined);
 		} catch {
-			toasts.error('Failed to load public decks.');
+			toasts.error($t('explore.failedToLoad'));
 		} finally {
 			loading = false;
 		}
@@ -31,7 +32,7 @@
 	}
 
 	async function handleUpvote(deck: Deck) {
-		if (!$auth.token) { toasts.info('Log in to upvote decks.'); return; }
+		if (!$auth.token) { toasts.info($t('explore.loginToUpvote')); return; }
 		upvotingId = deck.id;
 		try {
 			await decksApi.upvote(deck.id);
@@ -39,30 +40,30 @@
 				d.id === deck.id ? { ...d, upvote_count: d.upvote_count + 1 } : d
 			);
 		} catch (err) {
-			toasts.error(err instanceof Error ? err.message : 'Failed to upvote.');
+			toasts.error(err instanceof Error ? err.message : $t('explore.failedToUpvote'));
 		} finally {
 			upvotingId = null;
 		}
 	}
 </script>
 
-<svelte:head><title>Explore — kpfc</title></svelte:head>
+<svelte:head><title>{$t('explore.title')} — kpfc</title></svelte:head>
 
 <div class="flex flex-col gap-6">
 	<div class="flex items-center justify-between flex-wrap gap-3">
-		<h1 class="text-xl font-bold text-text">Explore</h1>
+		<h1 class="text-xl font-bold text-text">{$t('explore.title')}</h1>
 		<div class="flex items-center gap-1 text-sm">
 			<button
 				onclick={() => toggleSort('upvotes')}
 				class="px-3 py-1.5 rounded-md transition-colors {sort === 'upvotes' ? 'bg-primary text-background' : 'text-text/60 hover:text-text hover:bg-secondary/20'}"
 			>
-				Top
+				{$t('explore.top')}
 			</button>
 			<button
 				onclick={() => toggleSort('')}
 				class="px-3 py-1.5 rounded-md transition-colors {sort === '' ? 'bg-primary text-background' : 'text-text/60 hover:text-text hover:bg-secondary/20'}"
 			>
-				Newest
+				{$t('explore.newest')}
 			</button>
 		</div>
 	</div>
@@ -74,7 +75,7 @@
 			{/each}
 		</div>
 	{:else if decks.length === 0}
-		<EmptyState title="No public decks yet" description="Be the first to share a deck with the community." />
+		<EmptyState title={$t('explore.noDecksTitle')} description={$t('explore.noDecksDesc')} />
 	{:else}
 		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 			{#each decks as deck (deck.id)}
@@ -89,7 +90,7 @@
 						<button
 							onclick={() => handleUpvote(deck)}
 							disabled={upvotingId === deck.id}
-							aria-label="Upvote deck"
+							aria-label={$t('explore.upvoteDeck')}
 							class="flex items-center gap-1.5 text-sm text-text/50 hover:text-accent transition-colors disabled:opacity-50"
 						>
 							<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

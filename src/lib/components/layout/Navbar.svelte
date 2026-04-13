@@ -3,10 +3,11 @@
 	import { auth } from '$lib/stores/auth';
 	import { theme } from '$lib/stores/theme';
 	import { toasts } from '$lib/stores/toast';
+	import { t, locale } from '$lib/i18n';
 
 	function handleLogout() {
 		auth.logout();
-		toasts.info('Logged out.');
+		toasts.info($t('auth.loggedOutToast'));
 		goto('/login');
 	}
 </script>
@@ -23,51 +24,59 @@
 					href="/dashboard"
 					class="text-sm text-text/70 hover:text-text px-3 py-1.5 rounded-md transition-colors"
 				>
-					My Decks
+					{$t('nav.myDecks')}
 				</a>
 				<a
 					href="/explore"
 					class="text-sm text-text/70 hover:text-text px-3 py-1.5 rounded-md transition-colors"
 				>
-					Explore
+					{$t('nav.explore')}
 				</a>
 				<a
 					href="/profile"
 					class="text-sm text-text/70 hover:text-text px-3 py-1.5 rounded-md transition-colors"
 				>
-					Profile
+					{$t('nav.profile')}
 				</a>
 				<button
 					onclick={handleLogout}
 					class="text-sm text-text/50 hover:text-text px-3 py-1.5 rounded-md transition-colors"
 				>
-					Logout
+					{$t('nav.logout')}
 				</button>
 			{:else}
 				<a
 					href="/explore"
 					class="text-sm text-text/70 hover:text-text px-3 py-1.5 rounded-md transition-colors"
 				>
-					Explore
+					{$t('nav.explore')}
 				</a>
 				<a
 					href="/login"
 					class="text-sm text-text/70 hover:text-text px-3 py-1.5 rounded-md transition-colors"
 				>
-					Login
+					{$t('nav.login')}
 				</a>
 				<a
 					href="/register"
 					class="text-sm bg-primary text-background px-3 py-1.5 rounded-md hover:opacity-90 transition-opacity"
 				>
-					Register
+					{$t('nav.register')}
 				</a>
 			{/if}
 
 			<button
+				onclick={() => locale.toggle()}
+				aria-label={$t('nav.toggleLanguage')}
+				class="ml-1 w-8 h-8 flex items-center justify-center rounded-md text-text/60 hover:text-text hover:bg-secondary/20 transition-colors text-xs font-semibold"
+			>
+				{$locale === 'ptBR' ? 'PT' : 'EN'}
+			</button>
+
+			<button
 				onclick={() => theme.toggle()}
-				aria-label="Toggle dark mode"
-				class="ml-1 w-8 h-8 flex items-center justify-center rounded-md text-text/60 hover:text-text hover:bg-secondary/20 transition-colors"
+				aria-label={$t('nav.toggleDarkMode')}
+				class="w-8 h-8 flex items-center justify-center rounded-md text-text/60 hover:text-text hover:bg-secondary/20 transition-colors"
 			>
 				{#if $theme}
 					<!-- Sun icon -->

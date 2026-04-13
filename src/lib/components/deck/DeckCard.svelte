@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { t } from '$lib/i18n';
 	import type { Deck } from '$lib/types';
 
 	interface Props {
@@ -28,7 +29,7 @@
 			{/if}
 		</div>
 		{#if deck.is_public}
-			<span class="shrink-0 text-xs bg-secondary/20 text-secondary px-2 py-0.5 rounded-full">Public</span>
+			<span class="shrink-0 text-xs bg-secondary/20 text-secondary px-2 py-0.5 rounded-full">{$t('deck.public')}</span>
 		{/if}
 	</div>
 
@@ -49,7 +50,7 @@
 				{#if onedit}
 					<button
 						onclick={(e) => { e.stopPropagation(); onedit?.(); }}
-						aria-label="Edit deck"
+						aria-label={$t('deckCard.editDeck')}
 						class="p-1.5 rounded-md text-text/40 hover:text-text hover:bg-secondary/20 transition-colors"
 					>
 						<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -60,7 +61,7 @@
 				{#if ondelete}
 					<button
 						onclick={(e) => { e.stopPropagation(); ondelete?.(); }}
-						aria-label="Delete deck"
+						aria-label={$t('deckCard.deleteDeck')}
 						class="p-1.5 rounded-md text-text/40 hover:text-accent hover:bg-accent/10 transition-colors"
 					>
 						<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

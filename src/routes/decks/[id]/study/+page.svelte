@@ -6,6 +6,7 @@
 	import { toasts } from '$lib/stores/toast';
 	import { decksApi } from '$lib/api/decks';
 	import { studyApi } from '$lib/api/study';
+	import { t } from '$lib/i18n';
 	import type { Deck, Card, StudyMode } from '$lib/types';
 	import Flashcard from '$lib/components/study/Flashcard.svelte';
 	import QualityRating from '$lib/components/study/QualityRating.svelte';
@@ -29,7 +30,7 @@
 		try {
 			deck = await decksApi.get(deckId);
 		} catch {
-			toasts.error('Deck not found.');
+			toasts.error($t('study.deckNotFound'));
 			goto('/dashboard');
 		}
 	});
@@ -38,7 +39,7 @@
 		try {
 			cards = await studyApi.start(deckId, mode);
 			if (cards.length === 0) {
-				toasts.info('No cards due for review right now.');
+				toasts.info($t('study.noCardsDue'));
 				return;
 			}
 			currentIndex = 0;
@@ -46,7 +47,7 @@
 			reviews = [];
 			phase = 'studying';
 		} catch (err) {
-			toasts.error(err instanceof Error ? err.message : 'Failed to start session.');
+			toasts.error(err instanceof Error ? err.message : $t('study.failedToStart'));
 		}
 	}
 
@@ -63,7 +64,7 @@
 				revealed = false;
 			}
 		} catch (err) {
-			toasts.error(err instanceof Error ? err.message : 'Failed to submit review.');
+			toasts.error(err instanceof Error ? err.message : $t('study.failedToSubmit'));
 		} finally {
 			submitting = false;
 		}
@@ -73,7 +74,7 @@
 	const progress = $derived(cards.length > 0 ? ((currentIndex) / cards.length) * 100 : 0);
 </script>
 
-<svelte:head><title>Study — {deck?.title ?? 'kpfc'}</title></svelte:head>
+<svelte:head><title>{$t('study.pageTitle')} — {deck?.title ?? 'kpfc'}</title></svelte:head>
 
 <div class="max-w-2xl mx-auto flex flex-col gap-6">
 
@@ -81,24 +82,24 @@
 		<div class="flex flex-col gap-6">
 			<div>
 				<a href="/decks/{deckId}" class="text-text/40 hover:text-text/70 text-sm transition-colors">
-					← Back to deck
+					{$t('study.backToDeck')}
 				</a>
-				<h1 class="text-xl font-bold text-text mt-2">Study: {deck?.title}</h1>
+				<h1 class="text-xl font-bold text-text mt-2">{$t('study.titlePrefix')} {deck?.title}</h1>
 			</div>
 			<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 				<button
 					onclick={() => startSession('spaced')}
 					class="flex flex-col gap-2 p-6 rounded-xl border-2 border-secondary/20 bg-background text-left hover:border-primary/40 hover:bg-primary/5 transition-all"
 				>
-					<span class="font-semibold text-text">Spaced Repetition</span>
-					<span class="text-sm text-text/50">Review cards due today based on the SM-2 algorithm. Most efficient for long-term memory.</span>
+					<span class="font-semibold text-text">{$t('study.spacedRepetition')}</span>
+					<span class="text-sm text-text/50">{$t('study.spacedDesc')}</span>
 				</button>
 				<button
 					onclick={() => startSession('random')}
 					class="flex flex-col gap-2 p-6 rounded-xl border-2 border-secondary/20 bg-background text-left hover:border-secondary/60 hover:bg-secondary/5 transition-all"
 				>
-					<span class="font-semibold text-text">Random Practice</span>
-					<span class="text-sm text-text/50">Review all cards in random order. Good for self-testing. SM-2 state is not modified.</span>
+					<span class="font-semibold text-text">{$t('study.randomPractice')}</span>
+					<span class="text-sm text-text/50">{$t('study.randomDesc')}</span>
 				</button>
 			</div>
 		</div>
@@ -108,7 +109,7 @@
 			<!-- Progress -->
 			<div class="flex items-center gap-3">
 				<a href="/decks/{deckId}" class="text-text/40 hover:text-text/70 text-sm transition-colors shrink-0">
-					← Exit
+					{$t('study.exit')}
 				</a>
 				<div class="flex-1 h-1.5 bg-secondary/20 rounded-full overflow-hidden">
 					<div

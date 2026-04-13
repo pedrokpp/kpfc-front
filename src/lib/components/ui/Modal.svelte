@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
+	import { t } from '$lib/i18n';
 
 	interface Props {
 		open: boolean;
@@ -40,7 +41,7 @@
 				<h2 id="modal-title" class="text-base font-semibold text-text">{title}</h2>
 				<button
 					onclick={onclose}
-					aria-label="Close dialog"
+					aria-label={$t('modal.closeDialog')}
 					class="w-7 h-7 flex items-center justify-center rounded-md text-text/50 hover:text-text hover:bg-secondary/20 transition-colors"
 				>
 					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">

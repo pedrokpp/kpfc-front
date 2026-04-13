@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { t } from '$lib/i18n';
+
 	interface Props {
 		total: number;
 		reviews: { quality: number }[];
@@ -26,22 +28,22 @@
 	</div>
 
 	<div class="flex flex-col gap-1">
-		<h2 class="text-xl font-bold text-text">Session complete!</h2>
-		<p class="text-text/50 text-sm">You reviewed all cards in <strong class="text-text">{deckTitle}</strong></p>
+		<h2 class="text-xl font-bold text-text">{$t('summary.complete')}</h2>
+		<p class="text-text/50 text-sm">{$t('summary.reviewedPre')} <strong class="text-text">{deckTitle}</strong></p>
 	</div>
 
 	<div class="grid grid-cols-3 gap-6 w-full max-w-xs">
 		<div class="flex flex-col gap-1">
 			<span class="text-2xl font-bold text-primary">{total}</span>
-			<span class="text-xs text-text/50">Cards reviewed</span>
+			<span class="text-xs text-text/50">{$t('summary.cardsReviewed')}</span>
 		</div>
 		<div class="flex flex-col gap-1">
 			<span class="text-2xl font-bold text-primary">{good}</span>
-			<span class="text-xs text-text/50">Correct (≥3)</span>
+			<span class="text-xs text-text/50">{$t('summary.correct')}</span>
 		</div>
 		<div class="flex flex-col gap-1">
 			<span class="text-2xl font-bold text-primary">{avg}</span>
-			<span class="text-xs text-text/50">Avg quality</span>
+			<span class="text-xs text-text/50">{$t('summary.avgQuality')}</span>
 		</div>
 	</div>
 
@@ -50,13 +52,13 @@
 			href="/decks/{deckId}"
 			class="bg-secondary/20 text-text px-4 py-2 rounded-md text-sm font-medium hover:bg-secondary/30 transition-colors"
 		>
-			Back to deck
+			{$t('summary.backToDeck')}
 		</a>
 		<a
 			href="/decks/{deckId}/study"
 			class="bg-primary text-background px-4 py-2 rounded-md text-sm font-medium hover:opacity-90 transition-opacity"
 		>
-			Study again
+			{$t('summary.studyAgain')}
 		</a>
 	</div>
 </div>

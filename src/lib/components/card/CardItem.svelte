@@ -1,19 +1,21 @@
 <script lang="ts">
 	import type { Card } from '$lib/types';
+	import { t } from '$lib/i18n';
 
 	interface Props {
 		card: Card;
+		onpreview?: () => void;
 		onedit?: () => void;
 		ondelete?: () => void;
 	}
 
-	let { card, onedit, ondelete }: Props = $props();
+	let { card, onpreview, onedit, ondelete }: Props = $props();
 
 	const isDue = $derived(new Date(card.next_review_at) <= new Date());
 	const nextReview = $derived(new Date(card.next_review_at));
 </script>
 
-<article
+<div
 	onclick={() => onedit?.()}
 	role="button"
 	tabindex="0"
@@ -31,10 +33,22 @@
 			<p class="text-sm text-text/50 line-clamp-2">{card.card_type === 'cloze' && card.extra ? card.extra : card.back}</p>
 		</div>
 		<div class="flex gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+			{#if onpreview}
+				<button
+					onclick={(e) => { e.stopPropagation(); onpreview?.(); }}
+					aria-label={$t('cardItem.previewCard')}
+					class="p-1.5 rounded-md text-text/40 hover:text-text hover:bg-secondary/20 transition-colors"
+				>
+					<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+						<circle cx="12" cy="12" r="3"/>
+					</svg>
+				</button>
+			{/if}
 			{#if onedit}
 				<button
 					onclick={(e) => { e.stopPropagation(); onedit?.(); }}
-					aria-label="Edit card"
+					aria-label={$t('cardItem.editCard')}
 					class="p-1.5 rounded-md text-text/40 hover:text-text hover:bg-secondary/20 transition-colors"
 				>
 					<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -45,7 +59,7 @@
 			{#if ondelete}
 				<button
 					onclick={(e) => { e.stopPropagation(); ondelete?.(); }}
-					aria-label="Delete card"
+					aria-label={$t('cardItem.deleteCard')}
 					class="p-1.5 rounded-md text-text/40 hover:text-accent hover:bg-accent/10 transition-colors"
 				>
 					<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -57,11 +71,11 @@
 	</div>
 	<div class="flex items-center gap-3 text-xs text-text/40 mt-1">
 		{#if isDue}
-			<span class="text-accent font-medium">Due for review</span>
+			<span class="text-accent font-medium">{$t('cardItem.dueForReview')}</span>
 		{:else}
-			<span>Next: {nextReview.toLocaleDateString()}</span>
+			<span>{$t('cardItem.next')} {nextReview.toLocaleDateString()}</span>
 		{/if}
-		<span>Interval: {card.interval}d</span>
-		<span>Reps: {card.repetitions}</span>
+		<span>{$t('cardItem.interval')} {card.interval}{$t('cardItem.days')}</span>
+		<span>{$t('cardItem.reps')} {card.repetitions}</span>
 	</div>
-</article>
+</div>

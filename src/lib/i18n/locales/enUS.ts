@@ -1,0 +1,217 @@
+const messages = {
+	// Nav
+	'nav.myDecks': 'My Decks',
+	'nav.explore': 'Explore',
+	'nav.profile': 'Profile',
+	'nav.logout': 'Logout',
+	'nav.login': 'Login',
+	'nav.register': 'Register',
+	'nav.toggleDarkMode': 'Toggle dark mode',
+	'nav.toggleLanguage': 'Toggle language',
+
+	// Footer
+	'footer.tagline': 'Spaced repetition flashcards.',
+	'footer.apiSource': 'API source',
+
+	// Layout
+	'layout.pageTitle': 'kpfc — Flashcards',
+
+	// Home
+	'home.tagline': 'Spaced repetition flashcards, built to last.',
+	'home.studySmarter': 'Study smarter with the',
+	'home.algorithm': 'algorithm.',
+	'home.description': 'Create decks, track streaks, and explore public decks from the community.',
+	'home.getStarted': 'Get started',
+	'home.exploreDecks': 'Explore decks',
+
+	// Error
+	'error.somethingWrong': 'Something went wrong',
+	'error.backToDashboard': 'Back to dashboard',
+
+	// Auth
+	'auth.signIn': 'Sign in',
+	'auth.welcomeBack': 'Welcome back',
+	'auth.email': 'Email',
+	'auth.password': 'Password',
+	'auth.noAccount': 'No account?',
+	'auth.alreadyHaveAccount': 'Already have an account?',
+	'auth.createAccount': 'Create account',
+	'auth.startStudying': 'Start studying smarter',
+	'auth.displayName': 'Display name',
+	'auth.optional': 'Optional',
+	'auth.welcomeBackToast': 'Welcome back!',
+	'auth.accountCreatedToast': 'Account created! Welcome to kpfc.',
+	'auth.loggedOutToast': 'Logged out.',
+	'auth.loginFailed': 'Login failed.',
+	'auth.registrationFailed': 'Registration failed.',
+
+	// Dashboard
+	'dashboard.title': 'My Decks',
+	'dashboard.dayStreak': 'day streak',
+	'dashboard.pts': 'pts',
+	'dashboard.newDeck': 'New deck',
+	'dashboard.noDecksTitle': 'No decks yet',
+	'dashboard.noDecksDesc': 'Create your first deck to start studying.',
+	'dashboard.createDeck': 'Create deck',
+	'dashboard.editDeck': 'Edit deck',
+	'dashboard.deleteDeck': 'Delete deck',
+	'dashboard.deleteConfirmPre': 'Are you sure you want to delete',
+	'dashboard.deleteConfirmPost': '? This will remove all cards inside it. This action cannot be undone.',
+	'dashboard.deckCreated': 'Deck created.',
+	'dashboard.deckUpdated': 'Deck updated.',
+	'dashboard.deckDeleted': 'Deck deleted.',
+	'dashboard.failedToLoad': 'Failed to load decks.',
+	'dashboard.failedToCreate': 'Failed to create deck.',
+	'dashboard.failedToUpdate': 'Failed to update deck.',
+	'dashboard.failedToDelete': 'Failed to delete deck.',
+
+	// Explore
+	'explore.title': 'Explore',
+	'explore.top': 'Top',
+	'explore.newest': 'Newest',
+	'explore.noDecksTitle': 'No public decks yet',
+	'explore.noDecksDesc': 'Be the first to share a deck with the community.',
+	'explore.upvoteDeck': 'Upvote deck',
+	'explore.loginToUpvote': 'Log in to upvote decks.',
+	'explore.failedToLoad': 'Failed to load public decks.',
+	'explore.failedToUpvote': 'Failed to upvote.',
+
+	// Deck viewer
+	'deck.myDecks': 'My Decks',
+	'deck.public': 'Public',
+	'deck.card': 'card',
+	'deck.cards': 'cards',
+	'deck.due': 'due',
+	'deck.editDeck': 'Edit deck',
+	'deck.study': 'Study',
+	'deck.addCard': 'Add card',
+	'deck.noCardsTitle': 'No cards yet',
+	'deck.noCardsDesc': 'Add your first card to this deck.',
+	'deck.preview': 'Preview',
+	'deck.editCard': 'Edit card',
+	'deck.deleteCard': 'Delete card',
+	'deck.deleteCardConfirm': 'Are you sure you want to delete this card? This action cannot be undone.',
+	'deck.cardAdded': 'Card added.',
+	'deck.cardUpdated': 'Card updated.',
+	'deck.cardDeleted': 'Card deleted.',
+	'deck.failedToLoad': 'Failed to load deck.',
+	'deck.failedToAddCard': 'Failed to add card.',
+	'deck.failedToUpdateCard': 'Failed to update card.',
+	'deck.failedToDeleteCard': 'Failed to delete card.',
+	'deck.failedToUpdateDeck': 'Failed to update deck.',
+
+	// DeckCard
+	'deckCard.editDeck': 'Edit deck',
+	'deckCard.deleteDeck': 'Delete deck',
+
+	// DeckForm
+	'deckForm.title': 'Title',
+	'deckForm.description': 'Description',
+	'deckForm.descriptionPlaceholder': 'Optional description',
+	'deckForm.makePublic': 'Make this deck public',
+	'deckForm.cancel': 'Cancel',
+	'deckForm.saveChanges': 'Save changes',
+	'deckForm.createDeck': 'Create deck',
+
+	// CardForm
+	'cardForm.title': 'Title',
+	'cardForm.titleOptional': 'optional',
+	'cardForm.titlePlaceholder': 'Short label for this card',
+	'cardForm.basic': 'Basic',
+	'cardForm.cloze': 'Cloze',
+	'cardForm.front': 'Front',
+	'cardForm.text': 'Text',
+	'cardForm.clozeHintPost': 'for cloze deletions.',
+	'cardForm.frontPlaceholderBasic': 'Question or term',
+	'cardForm.back': 'Back',
+	'cardForm.backPlaceholder': 'Answer or definition',
+	'cardForm.extra': 'Extra',
+	'cardForm.extraOptional': 'optional',
+	'cardForm.extraPlaceholder': 'Additional notes shown after reveal',
+	'cardForm.attachFile': 'Attach file',
+	'cardForm.uploading': 'Uploading...',
+	'cardForm.fileHint': 'Images or audio, max 10 MB',
+	'cardForm.cancel': 'Cancel',
+	'cardForm.saveChanges': 'Save changes',
+	'cardForm.addCard': 'Add card',
+	'cardForm.unsupportedFileType': 'Unsupported file type. Use PNG, JPEG, GIF, WebP, SVG, MP3, or M4A.',
+	'cardForm.fileTooLarge': 'File too large. Maximum size is 10 MB.',
+	'cardForm.fileUploaded': 'File uploaded.',
+	'cardForm.uploadFailed': 'Upload failed.',
+
+	// CardItem
+	'cardItem.previewCard': 'Preview card',
+	'cardItem.editCard': 'Edit card',
+	'cardItem.deleteCard': 'Delete card',
+	'cardItem.dueForReview': 'Due for review',
+	'cardItem.next': 'Next:',
+	'cardItem.interval': 'Interval:',
+	'cardItem.days': 'd',
+	'cardItem.reps': 'Reps:',
+
+	// Modal
+	'modal.closeDialog': 'Close dialog',
+
+	// Study
+	'study.pageTitle': 'Study',
+	'study.backToDeck': '← Back to deck',
+	'study.titlePrefix': 'Study:',
+	'study.spacedRepetition': 'Spaced Repetition',
+	'study.spacedDesc': 'Review cards due today based on the SM-2 algorithm. Most efficient for long-term memory.',
+	'study.randomPractice': 'Random Practice',
+	'study.randomDesc': 'Review all cards in random order. Good for self-testing. SM-2 state is not modified.',
+	'study.exit': '← Exit',
+	'study.deckNotFound': 'Deck not found.',
+	'study.noCardsDue': 'No cards due for review right now.',
+	'study.failedToStart': 'Failed to start session.',
+	'study.failedToSubmit': 'Failed to submit review.',
+
+	// QualityRating
+	'rating.question': 'How well did you recall this?',
+	'rating.blackout': 'Blackout',
+	'rating.wrong': 'Wrong',
+	'rating.hard': 'Hard',
+	'rating.good': 'Good',
+	'rating.perfect': 'Perfect',
+	'rating.noRecall': 'No recall',
+	'rating.feltFamiliar': 'Felt familiar',
+	'rating.easyOnceSeen': 'Easy once seen',
+	'rating.significantEffort': 'Significant effort',
+	'rating.someHesitation': 'Some hesitation',
+	'rating.instantRecall': 'Instant recall',
+
+	// SessionSummary
+	'summary.complete': 'Session complete!',
+	'summary.reviewedPre': 'You reviewed all cards in',
+	'summary.cardsReviewed': 'Cards reviewed',
+	'summary.correct': 'Correct (≥3)',
+	'summary.avgQuality': 'Avg quality',
+	'summary.backToDeck': 'Back to deck',
+	'summary.studyAgain': 'Study again',
+
+	// Flashcard
+	'flashcard.revealAnswer': 'Reveal answer',
+	'flashcard.clickToReveal': 'Click to reveal answer',
+	'flashcard.question': 'Question',
+	'flashcard.text': 'Text',
+	'flashcard.answer': 'Answer',
+	'flashcard.extra': 'Extra',
+
+	// Profile
+	'profile.title': 'Profile',
+	'profile.dayStreak': 'Day streak',
+	'profile.totalPoints': 'Total points',
+	'profile.account': 'Account',
+	'profile.email': 'Email',
+	'profile.displayName': 'Display name',
+	'profile.yourName': 'Your name',
+	'profile.save': 'Save',
+	'profile.cancel': 'Cancel',
+	'profile.edit': 'Edit',
+	'profile.updated': 'Profile updated.',
+	'profile.failedToUpdate': 'Failed to update profile.',
+} as const;
+
+export type MessageKey = keyof typeof messages;
+export type Messages = Record<MessageKey, string>;
+export default messages;

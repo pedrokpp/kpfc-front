@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { CardType } from '$lib/types';
+	import { t } from '$lib/i18n';
 	import CardContent from '$lib/components/card/CardContent.svelte';
 
 	interface Props {
@@ -19,7 +20,7 @@
 <div class="w-full perspective-1000 overflow-hidden">
 	<button
 		onclick={revealed ? undefined : onreveal}
-		aria-label={revealed ? undefined : 'Reveal answer'}
+		aria-label={revealed ? undefined : $t('flashcard.revealAnswer')}
 		disabled={revealed}
 		class="w-full min-h-52 rounded-2xl border-2 border-secondary/30 bg-background shadow-lg
 		       flex flex-col items-center justify-center p-8 text-center gap-4
@@ -30,12 +31,12 @@
 			<div class="text-lg font-medium text-text leading-relaxed">
 				<CardContent content={front} revealCloze={false} />
 			</div>
-			<p class="text-xs text-text/40 mt-2">Click to reveal answer</p>
+			<p class="text-xs text-text/40 mt-2">{$t('flashcard.clickToReveal')}</p>
 		{:else}
 			<div class="w-full flex flex-col gap-5">
 				<div class="pb-5 border-b border-secondary/20">
 					<p class="text-sm text-text/50 font-medium uppercase tracking-wide mb-2">
-						{isCloze ? 'Text' : 'Question'}
+						{isCloze ? $t('flashcard.text') : $t('flashcard.question')}
 					</p>
 					<div class="text-base text-text leading-relaxed">
 						<CardContent content={front} revealCloze={true} />
@@ -44,7 +45,7 @@
 				{#if isCloze}
 					{#if extra}
 						<div>
-							<p class="text-sm text-text/50 font-medium uppercase tracking-wide mb-2">Extra</p>
+							<p class="text-sm text-text/50 font-medium uppercase tracking-wide mb-2">{$t('flashcard.extra')}</p>
 							<div class="text-lg font-medium text-primary leading-relaxed">
 								<CardContent content={extra} />
 							</div>
@@ -52,7 +53,7 @@
 					{/if}
 				{:else}
 					<div>
-						<p class="text-sm text-text/50 font-medium uppercase tracking-wide mb-2">Answer</p>
+						<p class="text-sm text-text/50 font-medium uppercase tracking-wide mb-2">{$t('flashcard.answer')}</p>
 						<div class="text-lg font-medium text-primary leading-relaxed">
 							<CardContent content={back} />
 						</div>

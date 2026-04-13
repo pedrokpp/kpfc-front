@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { t } from '$lib/i18n';
+
 	interface Props {
 		onrate: (quality: number) => void;
 		loading?: boolean;
@@ -6,14 +8,14 @@
 
 	let { onrate, loading = false }: Props = $props();
 
-	const ratings = [
-		{ value: 0, label: 'Blackout', description: 'No recall' },
-		{ value: 1, label: 'Wrong', description: 'Felt familiar' },
-		{ value: 2, label: 'Wrong', description: 'Easy once seen' },
-		{ value: 3, label: 'Hard', description: 'Significant effort' },
-		{ value: 4, label: 'Good', description: 'Some hesitation' },
-		{ value: 5, label: 'Perfect', description: 'Instant recall' }
-	];
+	const ratings = $derived([
+		{ value: 0, label: $t('rating.blackout'), description: $t('rating.noRecall') },
+		{ value: 1, label: $t('rating.wrong'), description: $t('rating.feltFamiliar') },
+		{ value: 2, label: $t('rating.wrong'), description: $t('rating.easyOnceSeen') },
+		{ value: 3, label: $t('rating.hard'), description: $t('rating.significantEffort') },
+		{ value: 4, label: $t('rating.good'), description: $t('rating.someHesitation') },
+		{ value: 5, label: $t('rating.perfect'), description: $t('rating.instantRecall') },
+	]);
 
 	const colors: Record<number, string> = {
 		0: 'border-accent/40 hover:bg-accent/10 hover:border-accent',
@@ -26,7 +28,7 @@
 </script>
 
 <div class="flex flex-col gap-3">
-	<p class="text-sm text-text/60 text-center font-medium">How well did you recall this?</p>
+	<p class="text-sm text-text/60 text-center font-medium">{$t('rating.question')}</p>
 	<div class="grid grid-cols-3 sm:grid-cols-6 gap-2 min-w-0 w-full">
 		{#each ratings as rating}
 			<button

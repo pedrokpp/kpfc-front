@@ -6,6 +6,7 @@
 	import { toasts } from '$lib/stores/toast';
 	import { decksApi } from '$lib/api/decks';
 	import { cardsApi } from '$lib/api/cards';
+	import { t } from '$lib/i18n';
 	import type { CardInput } from '$lib/api/cards';
 	import type { Deck, Card } from '$lib/types';
 	import CardItem from '$lib/components/card/CardItem.svelte';
@@ -14,6 +15,7 @@
 	import Modal from '$lib/components/ui/Modal.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
 	import EmptyState from '$lib/components/ui/EmptyState.svelte';
+	import Flashcard from '$lib/components/study/Flashcard.svelte';
 
 	const deckId = Number($page.params.id);
 
@@ -23,6 +25,8 @@
 	let saving = $state(false);
 
 	let showAddCard = $state(false);
+	let previewingCard = $state<Card | null>(null);
+	let previewRevealed = $state(false);
 	let editingCard = $state<Card | null>(null);
 	let deletingCard = $state<Card | null>(null);
 	let showEditDeck = $state(false);
@@ -40,7 +44,7 @@
 				cardsApi.list(deckId)
 			]);
 		} catch (err) {
-			toasts.error('Failed to load deck.');
+			toasts.error($t('deck.failedToLoad'));
 			goto('/dashboard');
 		} finally {
 			loading = false;
@@ -53,9 +57,9 @@
 			const card = await cardsApi.create(deckId, data);
 			cards = [...cards, card];
 			showAddCard = false;
-			toasts.success('Card added.');
+			toasts.success($t('deck.cardAdded'));
 		} catch (err) {
-			toasts.error(err instanceof Error ? err.message : 'Failed to add card.');
+			toasts.error(err instanceof Error ? err.message : $t('deck.failedToAddCard'));
 		} finally {
 			saving = false;
 		}
@@ -68,9 +72,9 @@
 			const updated = await cardsApi.update(editingCard.id, data);
 			cards = cards.map((c) => (c.id === updated.id ? updated : c));
 			editingCard = null;
-			toasts.success('Card updated.');
+			toasts.success($t('deck.cardUpdated'));
 		} catch (err) {
-			toasts.error(err instanceof Error ? err.message : 'Failed to update card.');
+			toasts.error(err instanceof Error ? err.message : $t('deck.failedToUpdateCard'));
 		} finally {
 			saving = false;
 		}
@@ -83,9 +87,9 @@
 			await cardsApi.delete(deletingCard.id);
 			cards = cards.filter((c) => c.id !== deletingCard!.id);
 			deletingCard = null;
-			toasts.success('Card deleted.');
+			toasts.success($t('deck.cardDeleted'));
 		} catch (err) {
-			toasts.error(err instanceof Error ? err.message : 'Failed to delete card.');
+			toasts.error(err instanceof Error ? err.message : $t('deck.failedToDeleteCard'));
 		} finally {
 			saving = false;
 		}
@@ -97,9 +101,9 @@
 		try {
 			deck = await decksApi.update(deckId, data);
 			showEditDeck = false;
-			toasts.success('Deck updated.');
+			toasts.success($t('dashboard.deckUpdated'));
 		} catch (err) {
-			toasts.error(err instanceof Error ? err.message : 'Failed to update deck.');
+			toasts.error(err instanceof Error ? err.message : $t('deck.failedToUpdateDeck'));
 		} finally {
 			saving = false;
 		}
@@ -121,20 +125,20 @@
 		<div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
 			<div class="flex flex-col gap-1">
 				<div class="flex items-center gap-2">
-					<a href="/dashboard" class="text-text/40 hover:text-text/70 text-sm transition-colors">My Decks</a>
+					<a href="/dashboard" class="text-text/40 hover:text-text/70 text-sm transition-colors">{$t('deck.myDecks')}</a>
 					<span class="text-text/30 text-sm">/</span>
 					<h1 class="text-xl font-bold text-text">{deck.title}</h1>
 					{#if deck.is_public}
-						<span class="text-xs bg-secondary/20 text-secondary px-2 py-0.5 rounded-full">Public</span>
+						<span class="text-xs bg-secondary/20 text-secondary px-2 py-0.5 rounded-full">{$t('deck.public')}</span>
 					{/if}
 				</div>
 				{#if deck.description}
 					<p class="text-sm text-text/50">{deck.description}</p>
 				{/if}
-				<p class="text-xs text-text/40">{cards.length} card{cards.length !== 1 ? 's' : ''} &middot; {dueCount} due</p>
+				<p class="text-xs text-text/40">{cards.length} {cards.length !== 1 ? $t('deck.cards') : $t('deck.card')} &middot; {dueCount} {$t('deck.due')}</p>
 			</div>
 			<div class="flex items-center gap-2 shrink-0">
-				<Button variant="ghost" size="sm" onclick={() => (showEditDeck = true)}>Edit deck</Button>
+				<Button variant="ghost" size="sm" onclick={() => (showEditDeck = true)}>{$t('deck.editDeck')}</Button>
 				{#if cards.length > 0}
 					<a
 						href="/decks/{deckId}/study"
@@ -143,14 +147,14 @@
 						<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
 							<polygon points="5 3 19 12 5 21 5 3"/>
 						</svg>
-						Study
+						{$t('deck.study')}
 					</a>
 				{/if}
 				<Button onclick={() => (showAddCard = true)} size="sm">
 					<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
 						<path d="M5 12h14M12 5v14"/>
 					</svg>
-					Add card
+					{$t('deck.addCard')}
 				</Button>
 			</div>
 		</div>
@@ -158,11 +162,11 @@
 		<!-- Cards list -->
 		{#if cards.length === 0}
 			<EmptyState
-				title="No cards yet"
-				description="Add your first card to this deck."
+				title={$t('deck.noCardsTitle')}
+				description={$t('deck.noCardsDesc')}
 			>
 				{#snippet children()}
-					<Button onclick={() => (showAddCard = true)}>Add card</Button>
+					<Button onclick={() => (showAddCard = true)}>{$t('deck.addCard')}</Button>
 				{/snippet}
 			</EmptyState>
 		{:else}
@@ -170,6 +174,7 @@
 				{#each cards as card (card.id)}
 					<CardItem
 						{card}
+						onpreview={() => { previewingCard = card; previewRevealed = false; }}
 						onedit={() => (editingCard = card)}
 						ondelete={() => (deletingCard = card)}
 					/>
@@ -179,25 +184,38 @@
 	</div>
 {/if}
 
-<Modal open={showAddCard} title="Add card" onclose={() => (showAddCard = false)}>
+<Modal open={!!previewingCard} title={$t('deck.preview')} onclose={() => { previewingCard = null; previewRevealed = false; }}>
+	{#if previewingCard}
+		<Flashcard
+			front={previewingCard.front}
+			back={previewingCard.back}
+			cardType={previewingCard.card_type}
+			extra={previewingCard.extra}
+			revealed={previewRevealed}
+			onreveal={() => (previewRevealed = true)}
+		/>
+	{/if}
+</Modal>
+
+<Modal open={showAddCard} title={$t('deck.addCard')} onclose={() => (showAddCard = false)}>
 	<CardForm loading={saving} onsubmit={handleAddCard} oncancel={() => (showAddCard = false)} />
 </Modal>
 
-<Modal open={!!editingCard} title="Edit card" onclose={() => (editingCard = null)}>
+<Modal open={!!editingCard} title={$t('deck.editCard')} onclose={() => (editingCard = null)}>
 	{#if editingCard}
 		<CardForm card={editingCard} loading={saving} onsubmit={handleEditCard} oncancel={() => (editingCard = null)} />
 	{/if}
 </Modal>
 
-<Modal open={!!deletingCard} title="Delete card" onclose={() => (deletingCard = null)}>
-	<p class="text-sm text-text/70">Are you sure you want to delete this card? This action cannot be undone.</p>
+<Modal open={!!deletingCard} title={$t('deck.deleteCard')} onclose={() => (deletingCard = null)}>
+	<p class="text-sm text-text/70">{$t('deck.deleteCardConfirm')}</p>
 	<div class="flex gap-2 justify-end pt-2">
-		<Button variant="ghost" onclick={() => (deletingCard = null)}>Cancel</Button>
-		<Button variant="danger" loading={saving} onclick={handleDeleteCard}>Delete</Button>
+		<Button variant="ghost" onclick={() => (deletingCard = null)}>{$t('cardForm.cancel')}</Button>
+		<Button variant="danger" loading={saving} onclick={handleDeleteCard}>{$t('deck.deleteCard')}</Button>
 	</div>
 </Modal>
 
-<Modal open={showEditDeck} title="Edit deck" onclose={() => (showEditDeck = false)}>
+<Modal open={showEditDeck} title={$t('deck.editDeck')} onclose={() => (showEditDeck = false)}>
 	{#if deck}
 		<DeckForm {deck} loading={saving} onsubmit={handleEditDeck} oncancel={() => (showEditDeck = false)} />
 	{/if}

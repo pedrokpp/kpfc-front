@@ -2,6 +2,7 @@
 	import './layout.css';
 	import { onMount } from 'svelte';
 	import { theme } from '$lib/stores/theme';
+	import { t } from '$lib/i18n';
 	import Navbar from '$lib/components/layout/Navbar.svelte';
 	import Footer from '$lib/components/layout/Footer.svelte';
 	import ToastContainer from '$lib/components/ui/ToastContainer.svelte';
@@ -12,7 +13,7 @@
 </script>
 
 <svelte:head>
-	<title>kpfc — Flashcards</title>
+	<title>{$t('layout.pageTitle')}</title>
 </svelte:head>
 
 <div class="min-h-screen flex flex-col bg-background text-text">
