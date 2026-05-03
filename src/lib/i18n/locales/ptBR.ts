@@ -140,6 +140,7 @@ const messages: Messages = {
 	'cardForm.fileTooLarge': 'Arquivo muito grande. O tamanho máximo é 10 MB.',
 	'cardForm.fileUploaded': 'Arquivo enviado.',
 	'cardForm.uploadFailed': 'Falha no envio.',
+	'cardForm.clozeRequired': 'Cards cloze precisam conter ao menos uma lacuna como {{c1::resposta}}.',
 
 	// CardItem
 	'cardItem.previewCard': 'Visualizar card',

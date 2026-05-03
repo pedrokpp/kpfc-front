@@ -1,18 +1,19 @@
 # KPFC API Reference
 
-**Version:** 0.1.12
+**Version:** 0.1.16
 **Base URL:** `http://localhost:8080/api/v1`
 
-KPFC is an Anki-like spaced-repetition flashcard backend. It uses JWT Bearer tokens for authentication, PostgreSQL for storage, and the SM-2 algorithm for study scheduling.
+KPFC is an Anki-like spaced-repetition flashcard backend. It uses JWT Bearer tokens for authentication, SQLite for storage, and the SM-2 algorithm for study scheduling.
 
 ## Configuration
 
 | Env Variable | Default | Description |
 |---|---|---|
 | `PORT` | `8080` | Server listen port |
-| `DATABASE_URL` | (required) | PostgreSQL connection string |
+| `DB_PATH` | `./data/kpfc.db` | SQLite database file path |
 | `JWT_SECRET` | (required) | Secret for JWT signing |
 | `MEDIA_ROOT` | `./media` | Local directory for uploaded media files |
+| `CORS_ALLOW_ORIGINS` | `http://localhost:5173` | Comma-separated browser origins allowed to call the API |
 
 ---
 
@@ -473,6 +474,7 @@ Update a card.
 {
   "front": "Updated question",
   "back": "Updated answer",
+  "card_type": "basic",
   "extra": "Optional extra context"
 }
 ```
@@ -480,15 +482,23 @@ Update a card.
 | Field | Type | Required | Notes |
 |---|---|---|---|
 | `title` | string | No | Optional preview title. |
-| `front` | string | Yes | |
-| `back` | string | Yes | |
-| `card_type` | string | No | If omitted, preserves existing card type. |
-| `extra` | string | No | |
+| `front` | string | Yes | Always required. For cloze cards it must contain at least one `{{cN::...}}` deletion. |
+| `back` | string | Conditionally | Required only when the effective final type is `basic`. Ignored and persisted as `""` for `cloze`. |
+| `card_type` | string | No | `"basic"` or `"cloze"`. If omitted, preserves the current card type. |
+| `cloze_index` | int | Conditionally | Required when the effective final type is `cloze` and not already present on the current cloze card. Ignored and persisted as `0` for `basic`. |
+| `extra` | string | No | Persisted only for `cloze`. For `basic`, it is discarded and stored as `""`. |
 
 **Response 200:** Card object.
 
+Type changes are normalized destructively:
+
+- `basic -> cloze` clears `back`
+- `cloze -> basic` clears `cloze_index` and `extra`
+- `basic` cards always persist `cloze_index = 0` and `extra = ""`
+- `cloze` cards always persist `back = ""`
+
 **Errors:**
-- `400` — `"invalid request body"` / `"invalid card id"` / `"front and back are required"`
+- `400` — `"invalid request body"` / `"invalid card id"` / `"front and back are required"` / cloze validation errors
 - `401` — `"unauthorized"`
 - `403` — `"forbidden"`
 - `404` — `"card not found"`
@@ -655,7 +665,7 @@ Serve a media file directly. No authentication required. Suitable for use in `<i
 **Response 200:** Raw file bytes with appropriate `Content-Type` and `Cache-Control: public, max-age=31536000, immutable` headers.
 
 **Errors:**
-- `404` — `"media not found"`
+- `404` — `"media not found"` when the `public_id` does not exist or the physical asset is missing from storage
 
 ---
 
@@ -666,6 +676,8 @@ Delete a media file. Requires authentication. Only the owning user may delete th
 **Path params:** `id` (string) — media `public_id` token
 
 **Response:** `204 No Content` (empty body)
+
+If the record exists, belongs to the authenticated user, but the physical file is already missing from storage, the API still removes the record and returns `204`.
 
 **Errors:**
 - `401` — `"unauthorized"`

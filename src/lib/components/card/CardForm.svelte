@@ -25,11 +25,18 @@
 
 	function handleSubmit(e: SubmitEvent) {
 		e.preventDefault();
-		const data: CardInput = { front, back };
+		const data: CardInput = {
+			front,
+			back: cardType === 'basic' ? back : '',
+			card_type: cardType
+		};
 		if (title.trim()) data.title = title.trim();
 		if (cardType === 'cloze') {
-			data.card_type = 'cloze';
 			const match = front.match(/\{\{c(\d+)::/);
+			if (!match) {
+				toasts.error($t('cardForm.clozeRequired'));
+				return;
+			}
 			data.cloze_index = match ? parseInt(match[1], 10) : 1;
 			data.extra = extra || undefined;
 		}

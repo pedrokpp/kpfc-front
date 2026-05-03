@@ -138,6 +138,7 @@ const messages = {
 	'cardForm.fileTooLarge': 'File too large. Maximum size is 10 MB.',
 	'cardForm.fileUploaded': 'File uploaded.',
 	'cardForm.uploadFailed': 'Upload failed.',
+	'cardForm.clozeRequired': 'Cloze cards must contain at least one deletion like {{c1::answer}}.',
 
 	// CardItem
 	'cardItem.previewCard': 'Preview card',
