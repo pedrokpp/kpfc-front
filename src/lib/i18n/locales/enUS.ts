@@ -166,6 +166,11 @@ const messages = {
 	'study.noCardsDue': 'No cards due for review right now.',
 	'study.failedToStart': 'Failed to start session.',
 	'study.failedToSubmit': 'Failed to submit review.',
+	'study.offlineResumed': 'Resumed your local study session while the server is unavailable.',
+	'study.syncing': 'Syncing saved reviews...',
+	'study.syncPending': '{count} saved review(s) still pending sync.',
+	'study.syncDegraded': 'Your progress is saved locally and will sync after the server comes back.',
+	'study.retrySync': 'Retry sync',
 
 	// QualityRating
 	'rating.question': 'How well did you recall this?',

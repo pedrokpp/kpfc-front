@@ -6,85 +6,89 @@
 	import { toasts } from '$lib/stores/toast';
 	import { decksApi } from '$lib/api/decks';
 	import { studyApi } from '$lib/api/study';
+	import { createStudySessionModule } from '$lib/modules/study-session';
 	import { t } from '$lib/i18n';
-	import type { Deck, Card, StudyMode } from '$lib/types';
-	import Flashcard from '$lib/components/study/Flashcard.svelte';
+	import type { StudyMode } from '$lib/types';
+	import Button from '$lib/components/ui/Button.svelte';
 	import QualityRating from '$lib/components/study/QualityRating.svelte';
 	import SessionSummary from '$lib/components/study/SessionSummary.svelte';
-	import Button from '$lib/components/ui/Button.svelte';
+	import Flashcard from '$lib/components/study/Flashcard.svelte';
 
 	const deckId = Number($page.params.id);
-
-	type Phase = 'select' | 'studying' | 'done';
-
-	let phase = $state<Phase>('select');
-	let deck = $state<Deck | null>(null);
-	let cards = $state<Card[]>([]);
-	let currentIndex = $state(0);
-	let revealed = $state(false);
+	const studySession = createStudySessionModule({
+		deckId,
+		decks: decksApi,
+		study: studyApi
+	});
 	let submitting = $state(false);
-	let reviews = $state<{ quality: number }[]>([]);
 
 	onMount(async () => {
 		if (!$auth.token) { goto('/login'); return; }
-		try {
-			deck = await decksApi.get(deckId);
-		} catch {
+		const result = await studySession.initialize();
+		if (result === 'missing-deck') {
 			toasts.error($t('study.deckNotFound'));
 			goto('/dashboard');
+			return;
+		}
+
+		if (result === 'offline-resumed') {
+			toasts.info($t('study.offlineResumed'));
 		}
 	});
 
 	async function startSession(mode: StudyMode) {
 		try {
-			cards = await studyApi.start(deckId, mode);
-			if (cards.length === 0) {
+			const result = await studySession.start(mode);
+			if (result === 'empty') {
 				toasts.info($t('study.noCardsDue'));
-				return;
 			}
-			currentIndex = 0;
-			revealed = false;
-			reviews = [];
-			phase = 'studying';
 		} catch (err) {
 			toasts.error(err instanceof Error ? err.message : $t('study.failedToStart'));
 		}
 	}
 
 	async function handleRate(quality: number) {
-		const card = cards[currentIndex];
 		submitting = true;
 		try {
-			await studyApi.review(card.id, quality);
-			reviews = [...reviews, { quality }];
-			if (currentIndex + 1 >= cards.length) {
-				phase = 'done';
-			} else {
-				currentIndex += 1;
-				revealed = false;
-			}
+			await studySession.rate(quality);
 		} catch (err) {
 			toasts.error(err instanceof Error ? err.message : $t('study.failedToSubmit'));
 		} finally {
 			submitting = false;
 		}
 	}
-
-	const currentCard = $derived(cards[currentIndex]);
-	const progress = $derived(cards.length > 0 ? ((currentIndex) / cards.length) * 100 : 0);
 </script>
 
-<svelte:head><title>{$t('study.pageTitle')} — {deck?.title ?? 'kpfc'}</title></svelte:head>
+<svelte:head><title>{$t('study.pageTitle')} — {$studySession.deck?.title ?? 'kpfc'}</title></svelte:head>
 
 <div class="max-w-2xl mx-auto flex flex-col gap-6">
+	{#if $studySession.pendingCount > 0 || $studySession.syncStatus === 'syncing'}
+		<div class="rounded-xl border border-secondary/20 bg-secondary/10 px-4 py-3 flex items-center justify-between gap-3">
+			<div class="flex flex-col gap-1">
+				<p class="text-sm font-medium text-text">
+					{$studySession.syncStatus === 'syncing'
+						? $t('study.syncing')
+						: $t('study.syncPending', { count: $studySession.pendingCount })}
+				</p>
+				<p class="text-xs text-text/60">
+					{$t('study.syncDegraded')}
+				</p>
+			</div>
+			{#if $studySession.syncStatus === 'degraded'}
+				<Button variant="ghost" size="sm" onclick={() => studySession.retrySync()}>
+					{$t('study.retrySync')}
+				</Button>
+			{/if}
+		</div>
+	{/if}
 
-	{#if phase === 'select'}
+	{#if $studySession.phase === 'select'}
 		<div class="flex flex-col gap-6">
 			<div>
 				<a href="/decks/{deckId}" class="text-text/40 hover:text-text/70 text-sm transition-colors">
 					{$t('study.backToDeck')}
 				</a>
-				<h1 class="text-xl font-bold text-text mt-2">{$t('study.titlePrefix')} {deck?.title}</h1>
+				<h1 class="text-xl font-bold text-text mt-2">{$t('study.titlePrefix')} {$studySession.deck?.title}</h1>
 			</div>
 			<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 				<button
@@ -104,7 +108,7 @@
 			</div>
 		</div>
 
-	{:else if phase === 'studying' && currentCard}
+	{:else if $studySession.phase === 'studying' && $studySession.cards[$studySession.currentIndex]}
 		<div class="flex flex-col gap-5 min-w-0">
 			<!-- Progress -->
 			<div class="flex items-center gap-3">
@@ -114,34 +118,34 @@
 				<div class="flex-1 h-1.5 bg-secondary/20 rounded-full overflow-hidden">
 					<div
 						class="h-full bg-primary rounded-full transition-all duration-300"
-						style="width: {progress}%"
+						style="width: {$studySession.cards.length > 0 ? ($studySession.currentIndex / $studySession.cards.length) * 100 : 0}%"
 					></div>
 				</div>
-				<span class="text-sm text-text/50 shrink-0">{currentIndex + 1} / {cards.length}</span>
+				<span class="text-sm text-text/50 shrink-0">{$studySession.currentIndex + 1} / {$studySession.cards.length}</span>
 			</div>
 
 			<!-- Flashcard -->
 			<Flashcard
-				front={currentCard.front}
-				back={currentCard.back}
-				cardType={currentCard.card_type}
-				extra={currentCard.extra}
-				{revealed}
-				onreveal={() => (revealed = true)}
+				front={$studySession.cards[$studySession.currentIndex].front}
+				back={$studySession.cards[$studySession.currentIndex].back}
+				cardType={$studySession.cards[$studySession.currentIndex].card_type}
+				extra={$studySession.cards[$studySession.currentIndex].extra}
+				revealed={$studySession.revealed}
+				onreveal={() => studySession.reveal()}
 			/>
 
 			<!-- Rating (shown after reveal) -->
-			{#if revealed}
+			{#if $studySession.revealed}
 				<QualityRating onrate={handleRate} loading={submitting} />
 			{/if}
 		</div>
 
-	{:else if phase === 'done'}
+	{:else if $studySession.phase === 'done'}
 		<SessionSummary
-			total={cards.length}
-			{reviews}
+			total={$studySession.cards.length}
+			reviews={$studySession.reviews}
 			{deckId}
-			deckTitle={deck?.title ?? ''}
+			deckTitle={$studySession.deck?.title ?? ''}
 		/>
 	{/if}
 </div>

@@ -168,6 +168,11 @@ const messages: Messages = {
 	'study.noCardsDue': 'Nenhum card para revisar agora.',
 	'study.failedToStart': 'Falha ao iniciar sessão.',
 	'study.failedToSubmit': 'Falha ao enviar avaliação.',
+	'study.offlineResumed': 'Sua sessão local de estudo foi retomada enquanto o servidor está indisponível.',
+	'study.syncing': 'Sincronizando reviews salvos...',
+	'study.syncPending': '{count} review(s) salvos ainda aguardam sincronização.',
+	'study.syncDegraded': 'Seu progresso está salvo localmente e será sincronizado quando o servidor voltar.',
+	'study.retrySync': 'Tentar sincronizar',
 
 	// QualityRating
 	'rating.question': 'Quão bem você se lembrou?',
