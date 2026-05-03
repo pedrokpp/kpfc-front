@@ -17,7 +17,7 @@ Update this file after completing each task: replace `[ ]` with `[x]`.
 - [x] Update `src/routes/+layout.svelte` — compose Navbar, Footer, ToastContainer in a `min-h-screen flex flex-col` wrapper
 - [x] Add `src/routes/+layout.ts` with `export const ssr = false` and `export const prerender = false`
 
-**Verification:** Run `npm run dev`. App loads. Theme toggle switches palette instantly with no flash on reload. Navbar and Footer render correctly.
+**Verification:** Run `pnpm dev`. App loads. Theme toggle switches palette instantly with no flash on reload. Navbar and Footer render correctly.
 
 ---
 

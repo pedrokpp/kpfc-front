@@ -41,8 +41,8 @@ The color palette was generated with [Realtime Colors](https://www.realtimecolor
 ### Setup
 
 ```bash
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
 
 The app will be available at `http://localhost:5173`.
@@ -59,7 +59,7 @@ PUBLIC_API_URL=https://your-api-host/api/v1
 ### Build
 
 ```bash
-npm run build
+pnpm build
 ```
 
 Output goes to `build/`. Serve as a static site with any HTTP server.
