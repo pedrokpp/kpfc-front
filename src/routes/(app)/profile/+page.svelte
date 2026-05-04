@@ -1,7 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { goto } from '$app/navigation';
-	import { auth } from '$lib/stores/auth';
+	import { authSession as auth } from '$lib/modules/auth-session';
 	import { toasts } from '$lib/stores/toast';
 	import { t } from '$lib/i18n';
 	import Input from '$lib/components/ui/Input.svelte';
@@ -10,10 +8,6 @@
 	let displayName = $state($auth.user?.display_name ?? '');
 	let loading = $state(false);
 	let editing = $state(false);
-
-	onMount(() => {
-		if (!$auth.token) goto('/login');
-	});
 
 	async function handleSave(e: SubmitEvent) {
 		e.preventDefault();
@@ -36,7 +30,6 @@
 	<div class="max-w-md flex flex-col gap-6">
 		<h1 class="text-xl font-bold text-text">{$t('profile.title')}</h1>
 
-		<!-- Stats -->
 		<div class="grid grid-cols-2 gap-4">
 			<div class="bg-background border border-secondary/20 rounded-xl p-5 flex flex-col gap-1">
 				<span class="text-3xl font-bold text-primary">{$auth.user.login_streak}</span>
@@ -48,7 +41,6 @@
 			</div>
 		</div>
 
-		<!-- Account info -->
 		<div class="bg-background border border-secondary/20 rounded-xl p-5 flex flex-col gap-4">
 			<h2 class="text-sm font-semibold text-text/70 uppercase tracking-wide">{$t('profile.account')}</h2>
 

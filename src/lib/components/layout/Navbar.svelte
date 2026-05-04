@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { auth } from '$lib/stores/auth';
+	import { authSession as auth } from '$lib/modules/auth-session';
 	import { theme } from '$lib/stores/theme';
 	import { toasts } from '$lib/stores/toast';
 	import { t, locale } from '$lib/i18n';

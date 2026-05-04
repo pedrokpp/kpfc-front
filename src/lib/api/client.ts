@@ -1,13 +1,23 @@
 import { browser } from '$app/environment';
-import { auth } from '$lib/stores/auth';
+import { authState } from '$lib/modules/auth-state';
 import type { ApiError } from '$lib/types';
+
+export class ApiRequestError extends Error {
+	status: number;
+
+	constructor(status: number, message: string) {
+		super(message);
+		this.name = 'ApiRequestError';
+		this.status = status;
+	}
+}
 
 export const BASE_URL = browser
 	? (import.meta.env.PUBLIC_API_URL ?? 'http://localhost:8080/api/v1')
 	: 'http://localhost:8080/api/v1';
 
 function getToken(): string | null {
-	return browser ? auth.getToken() : null;
+	return browser ? authState.getSnapshot().token : null;
 }
 
 function authHeaders(): HeadersInit {
@@ -17,16 +27,20 @@ function authHeaders(): HeadersInit {
 
 async function handleResponse<T>(res: Response): Promise<T> {
 	if (res.status === 401) {
-		if (browser) auth.handleUnauthorized();
-		throw new Error('Unauthorized');
+		if (browser) authState.handleUnauthorized();
+		throw new ApiRequestError(401, 'Unauthorized');
 	}
 
 	if (res.status === 204) return undefined as T;
 
-	const data = await res.json();
+	let data: unknown = null;
+	const contentType = res.headers.get('content-type') ?? '';
+	if (contentType.includes('application/json')) {
+		data = await res.json();
+	}
 
 	if (!res.ok) {
-		throw new Error((data as ApiError).error ?? 'Request failed');
+		throw new ApiRequestError(res.status, (data as ApiError | null)?.error ?? 'Request failed');
 	}
 
 	return data as T;

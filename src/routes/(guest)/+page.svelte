@@ -1,12 +1,5 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import { auth } from '$lib/stores/auth';
 	import { t } from '$lib/i18n';
-	import { onMount } from 'svelte';
-
-	onMount(() => {
-		if ($auth.token) goto('/dashboard');
-	});
 </script>
 
 <div class="flex flex-col items-center justify-center min-h-[60vh] text-center gap-6">
