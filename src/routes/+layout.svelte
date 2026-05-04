@@ -1,6 +1,7 @@
 <script lang="ts">
 	import './layout.css';
 	import { onMount } from 'svelte';
+	import { reviewSync } from '$lib/modules/review-sync';
 	import { theme } from '$lib/stores/theme';
 	import { t } from '$lib/i18n';
 	import Navbar from '$lib/components/layout/Navbar.svelte';
@@ -9,7 +10,10 @@
 
 	let { children } = $props();
 
-	onMount(() => theme.init());
+	onMount(() => {
+		theme.init();
+		reviewSync.start();
+	});
 </script>
 
 <svelte:head>

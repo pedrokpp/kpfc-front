@@ -1,19 +1,10 @@
 import { browser } from '$app/environment';
 import { writable } from 'svelte/store';
-import type { Card, Deck, StudyMode } from '$lib/types';
+import type { Card, Deck, QueuedReview, StudyMode } from '$lib/types';
 
 export type StudyPhase = 'select' | 'studying' | 'done';
-type SyncStatus = 'idle' | 'syncing' | 'degraded';
 
 interface ReviewRecord {
-	id: string;
-	cardId: number;
-	quality: number;
-	synced: boolean;
-	createdAt: string;
-}
-
-interface PendingReview {
 	id: string;
 	cardId: number;
 	quality: number;
@@ -40,9 +31,6 @@ interface StudySessionState {
 	currentIndex: number;
 	revealed: boolean;
 	reviews: ReviewRecord[];
-	pendingCount: number;
-	syncStatus: SyncStatus;
-	lastSyncError: string | null;
 }
 
 interface DeckAdapter {
@@ -51,13 +39,17 @@ interface DeckAdapter {
 
 interface StudyAdapter {
 	start(deckId: number, mode: StudyMode): Promise<Card[]>;
-	review(cardId: number, quality: number): Promise<Card>;
+}
+
+interface ReviewSyncAdapter {
+	enqueue(review: QueuedReview): Promise<void>;
 }
 
 interface StudySessionModuleOptions {
 	deckId: number;
 	decks: DeckAdapter;
 	study: StudyAdapter;
+	reviewSync: ReviewSyncAdapter;
 }
 
 type InitializeResult = 'ready' | 'offline-resumed' | 'missing-deck';
@@ -65,7 +57,6 @@ type StartResult = 'started' | 'empty';
 type RateResult = 'advanced' | 'done';
 
 const SESSION_KEY_PREFIX = 'kpfc.study-session';
-const REVIEW_QUEUE_KEY = 'kpfc.study-review-queue';
 const STORAGE_VERSION = 1;
 
 function createDefaultState(): StudySessionState {
@@ -76,10 +67,7 @@ function createDefaultState(): StudySessionState {
 		cards: [],
 		currentIndex: 0,
 		revealed: false,
-		reviews: [],
-		pendingCount: 0,
-		syncStatus: 'idle',
-		lastSyncError: null
+		reviews: []
 	};
 }
 
@@ -142,31 +130,13 @@ function writeSession(deckId: number, state: StudySessionState) {
 	localStorage.setItem(`${SESSION_KEY_PREFIX}.${deckId}`, JSON.stringify(payload));
 }
 
-function readPendingReviews(): PendingReview[] {
-	if (!browser) return [];
-
-	try {
-		const raw = localStorage.getItem(REVIEW_QUEUE_KEY);
-		if (!raw) return [];
-		const parsed = JSON.parse(raw);
-		return Array.isArray(parsed) ? parsed : [];
-	} catch {
-		return [];
-	}
-}
-
-function writePendingReviews(queue: PendingReview[]) {
-	if (!browser) return;
-	localStorage.setItem(REVIEW_QUEUE_KEY, JSON.stringify(queue));
-}
-
 function newReviewId() {
 	return browser && typeof crypto.randomUUID === 'function'
 		? crypto.randomUUID()
 		: `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
-export function createStudySessionModule({ deckId, decks, study }: StudySessionModuleOptions) {
+export function createStudySessionModule({ deckId, decks, study, reviewSync }: StudySessionModuleOptions) {
 	const restored = readSession(deckId);
 	const { subscribe, update } = writable<StudySessionState>({
 		...createDefaultState(),
@@ -176,8 +146,7 @@ export function createStudySessionModule({ deckId, decks, study }: StudySessionM
 		cards: restored?.cards ?? [],
 		currentIndex: restored?.currentIndex ?? 0,
 		revealed: restored?.revealed ?? false,
-		reviews: restored?.reviews ?? [],
-		pendingCount: readPendingReviews().length
+		reviews: restored?.reviews ?? []
 	});
 
 	let currentState: StudySessionState = {
@@ -188,15 +157,12 @@ export function createStudySessionModule({ deckId, decks, study }: StudySessionM
 		cards: restored?.cards ?? [],
 		currentIndex: restored?.currentIndex ?? 0,
 		revealed: restored?.revealed ?? false,
-		reviews: restored?.reviews ?? [],
-		pendingCount: readPendingReviews().length
+		reviews: restored?.reviews ?? []
 	};
 
 	subscribe((value) => {
 		currentState = value;
 	});
-
-	let syncing = false;
 
 	function patch(mutator: (state: StudySessionState) => StudySessionState) {
 		update((state) => {
@@ -204,54 +170,6 @@ export function createStudySessionModule({ deckId, decks, study }: StudySessionM
 			writeSession(deckId, next);
 			return next;
 		});
-	}
-
-	function setPendingCount() {
-		const pendingCount = readPendingReviews().length;
-		patch((state) => ({ ...state, pendingCount }));
-	}
-
-	async function flushPendingReviews() {
-		if (!browser || syncing) return;
-
-		const queue = readPendingReviews();
-		if (queue.length === 0) {
-			patch((state) => ({ ...state, pendingCount: 0, syncStatus: 'idle', lastSyncError: null }));
-			return;
-		}
-
-		syncing = true;
-		patch((state) => ({ ...state, pendingCount: queue.length, syncStatus: 'syncing', lastSyncError: null }));
-
-		let remaining = queue;
-
-		try {
-			for (const pending of queue) {
-				const updatedCard = await study.review(pending.cardId, pending.quality);
-				remaining = remaining.filter((item) => item.id !== pending.id);
-				writePendingReviews(remaining);
-
-				patch((state) => ({
-					...state,
-					cards: state.cards.map((card) => (card.id === updatedCard.id ? updatedCard : card)),
-					reviews: state.reviews.map((review) =>
-						review.id === pending.id ? { ...review, synced: true } : review
-					),
-					pendingCount: remaining.length
-				}));
-			}
-
-			patch((state) => ({ ...state, syncStatus: 'idle', lastSyncError: null, pendingCount: 0 }));
-		} catch (error) {
-			patch((state) => ({
-				...state,
-				syncStatus: 'degraded',
-				lastSyncError: error instanceof Error ? error.message : 'sync_failed',
-				pendingCount: remaining.length
-			}));
-		} finally {
-			syncing = false;
-		}
 	}
 
 	function clearSession() {
@@ -278,17 +196,9 @@ export function createStudySessionModule({ deckId, decks, study }: StudySessionM
 					return 'missing-deck';
 				}
 
-				patch((state) => ({
-					...state,
-					syncStatus: state.pendingCount > 0 ? 'degraded' : state.syncStatus,
-					lastSyncError: state.pendingCount > 0 ? 'offline_session' : state.lastSyncError
-				}));
-
-				void flushPendingReviews();
 				return 'offline-resumed';
 			}
 
-			void flushPendingReviews();
 			return 'ready';
 		},
 
@@ -306,8 +216,7 @@ export function createStudySessionModule({ deckId, decks, study }: StudySessionM
 				cards,
 				currentIndex: 0,
 				revealed: false,
-				reviews: [],
-				lastSyncError: null
+				reviews: []
 			}));
 
 			return 'started';
@@ -325,20 +234,16 @@ export function createStudySessionModule({ deckId, decks, study }: StudySessionM
 				id: newReviewId(),
 				cardId: card.id,
 				quality,
-				synced: false,
 				createdAt: new Date().toISOString()
 			};
 
-			const queue = [
-				...readPendingReviews(),
-				{
-					id: review.id,
-					cardId: review.cardId,
-					quality: review.quality,
-					createdAt: review.createdAt
-				}
-			];
-			writePendingReviews(queue);
+			await reviewSync.enqueue({
+				id: review.id,
+				deckId,
+				cardId: review.cardId,
+				quality: review.quality,
+				createdAt: review.createdAt
+			});
 
 			const isLastCard = currentState.currentIndex + 1 >= currentState.cards.length;
 
@@ -347,17 +252,10 @@ export function createStudySessionModule({ deckId, decks, study }: StudySessionM
 				reviews: [...state.reviews, review],
 				currentIndex: isLastCard ? state.currentIndex : state.currentIndex + 1,
 				revealed: false,
-				phase: isLastCard ? 'done' : 'studying',
-				pendingCount: queue.length,
-				syncStatus: queue.length > 0 ? 'syncing' : state.syncStatus
+				phase: isLastCard ? 'done' : 'studying'
 			}));
 
-			void flushPendingReviews();
 			return isLastCard ? 'done' : 'advanced';
-		},
-
-		async retrySync() {
-			await flushPendingReviews();
 		}
 	};
 }

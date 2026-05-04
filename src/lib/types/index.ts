@@ -17,6 +17,12 @@ export interface Deck {
 	updated_at: string;
 }
 
+export interface DeckDraft {
+	title: string;
+	description: string;
+	is_public: boolean;
+}
+
 export type CardType = 'basic' | 'cloze';
 
 export interface Card {
@@ -41,6 +47,20 @@ export interface ApiError {
 }
 
 export type StudyMode = 'spaced' | 'random';
+
+export interface QueuedReview {
+	id: string;
+	deckId: number;
+	cardId: number;
+	quality: number;
+	createdAt: string;
+}
+
+export interface DeckReviewSyncState {
+	pendingCount: number;
+	syncStatus: 'idle' | 'syncing' | 'degraded';
+	lastSyncError: string | null;
+}
 
 export interface Toast {
 	id: string;

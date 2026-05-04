@@ -1,11 +1,7 @@
 import { api } from './client';
-import type { Deck } from '$lib/types';
+import type { Deck, DeckDraft } from '$lib/types';
 
-export interface DeckInput {
-	title: string;
-	description?: string;
-	is_public?: boolean;
-}
+export type DeckInput = DeckDraft;
 
 export const decksApi = {
 	list: () => api.get<Deck[]>('/decks'),

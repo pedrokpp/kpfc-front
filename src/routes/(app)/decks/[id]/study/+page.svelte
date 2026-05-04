@@ -2,10 +2,10 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { auth } from '$lib/stores/auth';
 	import { toasts } from '$lib/stores/toast';
 	import { decksApi } from '$lib/api/decks';
 	import { studyApi } from '$lib/api/study';
+	import { reviewSync } from '$lib/modules/review-sync';
 	import { createStudySessionModule } from '$lib/modules/study-session';
 	import { t } from '$lib/i18n';
 	import type { StudyMode } from '$lib/types';
@@ -18,12 +18,13 @@
 	const studySession = createStudySessionModule({
 		deckId,
 		decks: decksApi,
-		study: studyApi
+		study: studyApi,
+		reviewSync
 	});
+	const deckSync = reviewSync.observeDeck(deckId);
 	let submitting = $state(false);
 
 	onMount(async () => {
-		if (!$auth.token) { goto('/login'); return; }
 		const result = await studySession.initialize();
 		if (result === 'missing-deck') {
 			toasts.error($t('study.deckNotFound'));
@@ -62,20 +63,20 @@
 <svelte:head><title>{$t('study.pageTitle')} — {$studySession.deck?.title ?? 'kpfc'}</title></svelte:head>
 
 <div class="max-w-2xl mx-auto flex flex-col gap-6">
-	{#if $studySession.pendingCount > 0 || $studySession.syncStatus === 'syncing'}
+	{#if $deckSync.pendingCount > 0 || $deckSync.syncStatus === 'syncing'}
 		<div class="rounded-xl border border-secondary/20 bg-secondary/10 px-4 py-3 flex items-center justify-between gap-3">
 			<div class="flex flex-col gap-1">
 				<p class="text-sm font-medium text-text">
-					{$studySession.syncStatus === 'syncing'
+					{$deckSync.syncStatus === 'syncing'
 						? $t('study.syncing')
-						: $t('study.syncPending', { count: $studySession.pendingCount })}
+						: $t('study.syncPending', { count: $deckSync.pendingCount })}
 				</p>
 				<p class="text-xs text-text/60">
 					{$t('study.syncDegraded')}
 				</p>
 			</div>
-			{#if $studySession.syncStatus === 'degraded'}
-				<Button variant="ghost" size="sm" onclick={() => studySession.retrySync()}>
+			{#if $deckSync.syncStatus === 'degraded'}
+				<Button variant="ghost" size="sm" onclick={() => reviewSync.retryDeck(deckId)}>
 					{$t('study.retrySync')}
 				</Button>
 			{/if}
@@ -110,7 +111,6 @@
 
 	{:else if $studySession.phase === 'studying' && $studySession.cards[$studySession.currentIndex]}
 		<div class="flex flex-col gap-5 min-w-0">
-			<!-- Progress -->
 			<div class="flex items-center gap-3">
 				<a href="/decks/{deckId}" class="text-text/40 hover:text-text/70 text-sm transition-colors shrink-0">
 					{$t('study.exit')}
@@ -124,7 +124,6 @@
 				<span class="text-sm text-text/50 shrink-0">{$studySession.currentIndex + 1} / {$studySession.cards.length}</span>
 			</div>
 
-			<!-- Flashcard -->
 			<Flashcard
 				front={$studySession.cards[$studySession.currentIndex].front}
 				back={$studySession.cards[$studySession.currentIndex].back}
@@ -134,7 +133,6 @@
 				onreveal={() => studySession.reveal()}
 			/>
 
-			<!-- Rating (shown after reveal) -->
 			{#if $studySession.revealed}
 				<QualityRating onrate={handleRate} loading={submitting} />
 			{/if}
