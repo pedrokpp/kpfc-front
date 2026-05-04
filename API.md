@@ -122,9 +122,9 @@ Register a new user account.
 ```
 
 **Errors:**
-- `400` — `"invalid request body"` / `"email and password are required"`
-- `409` — `"email already registered"`
-- `500` — `"registration failed"`
+- `400` - `"invalid request body"` / `"email and password are required"`
+- `409` - `"email already registered"`
+- `500` - `"registration failed"`
 
 ---
 
@@ -155,9 +155,9 @@ Authenticate and receive a JWT token.
 ```
 
 **Errors:**
-- `400` — `"invalid request body"`
-- `401` — `"invalid credentials"`
-- `500` — `"login failed"`
+- `400` - `"invalid request body"`
+- `401` - `"invalid credentials"`
+- `500` - `"login failed"`
 
 ---
 
@@ -179,8 +179,8 @@ Get the authenticated user's profile.
 ```
 
 **Errors:**
-- `401` — `"unauthorized"`
-- `500` — `"failed to get profile"`
+- `401` - `"unauthorized"`
+- `500` - `"failed to get profile"`
 
 ---
 
@@ -198,9 +198,9 @@ Update the authenticated user's profile.
 **Response 200:** Same format as GET /users/me.
 
 **Errors:**
-- `400` — `"invalid request body"`
-- `401` — `"unauthorized"`
-- `500` — `"failed to update profile"`
+- `400` - `"invalid request body"`
+- `401` - `"unauthorized"`
+- `500` - `"failed to update profile"`
 
 ---
 
@@ -230,8 +230,8 @@ List all decks owned by the authenticated user.
 **Response 200:** Array of deck objects.
 
 **Errors:**
-- `401` — `"unauthorized"`
-- `500` — `"failed to list decks"`
+- `401` - `"unauthorized"`
+- `500` - `"failed to list decks"`
 
 ---
 
@@ -257,9 +257,9 @@ Create a new deck.
 **Response 201:** Deck object.
 
 **Errors:**
-- `400` — `"invalid request body"` / `"title is required"`
-- `401` — `"unauthorized"`
-- `500` — `"failed to create deck"`
+- `400` - `"invalid request body"` / `"title is required"`
+- `401` - `"unauthorized"`
+- `500` - `"failed to create deck"`
 
 ---
 
@@ -267,15 +267,15 @@ Create a new deck.
 
 Get a specific deck. Must be owned by the authenticated user.
 
-**Path params:** `id` (uint) — deck ID
+**Path params:** `id` (uint) - deck ID
 
 **Response 200:** Deck object.
 
 **Errors:**
-- `400` — `"invalid deck id"`
-- `401` — `"unauthorized"`
-- `403` — `"forbidden"`
-- `404` — `"deck not found"`
+- `400` - `"invalid deck id"`
+- `401` - `"unauthorized"`
+- `403` - `"forbidden"`
+- `404` - `"deck not found"`
 
 ---
 
@@ -283,7 +283,7 @@ Get a specific deck. Must be owned by the authenticated user.
 
 Update a deck. Must be owned by the authenticated user.
 
-**Path params:** `id` (uint) — deck ID
+**Path params:** `id` (uint) - deck ID
 
 **Request body:**
 ```json
@@ -303,10 +303,10 @@ Update a deck. Must be owned by the authenticated user.
 **Response 200:** Deck object.
 
 **Errors:**
-- `400` — `"invalid request body"` / `"invalid deck id"` / `"title is required"`
-- `401` — `"unauthorized"`
-- `403` — `"forbidden"`
-- `404` — `"deck not found"`
+- `400` - `"invalid request body"` / `"invalid deck id"` / `"title is required"`
+- `401` - `"unauthorized"`
+- `403` - `"forbidden"`
+- `404` - `"deck not found"`
 
 ---
 
@@ -314,15 +314,15 @@ Update a deck. Must be owned by the authenticated user.
 
 Delete a deck. Must be owned by the authenticated user.
 
-**Path params:** `id` (uint) — deck ID
+**Path params:** `id` (uint) - deck ID
 
 **Response:** `204 No Content` (empty body)
 
 **Errors:**
-- `400` — `"invalid deck id"`
-- `401` — `"unauthorized"`
-- `403` — `"forbidden"`
-- `404` — `"deck not found"`
+- `400` - `"invalid deck id"`
+- `401` - `"unauthorized"`
+- `403` - `"forbidden"`
+- `404` - `"deck not found"`
 
 ---
 
@@ -330,17 +330,17 @@ Delete a deck. Must be owned by the authenticated user.
 
 Toggle an upvote on a deck. Calling again removes the upvote.
 
-**Path params:** `id` (uint) — deck ID
+**Path params:** `id` (uint) - deck ID
 
 **Request:** No body.
 
 **Response:** `204 No Content` (empty body)
 
 **Errors:**
-- `400` — `"invalid deck id"`
-- `401` — `"unauthorized"`
-- `403` — `"forbidden"`
-- `404` — `"deck not found"`
+- `400` - `"invalid deck id"`
+- `401` - `"unauthorized"`
+- `403` - `"forbidden"`
+- `404` - `"deck not found"`
 
 ---
 
@@ -393,15 +393,15 @@ List all public decks. No authentication required.
 
 List all cards in a deck. Deck must be owned by the authenticated user.
 
-**Path params:** `id` (uint) — deck ID
+**Path params:** `id` (uint) - deck ID
 
 **Response 200:** Array of card objects.
 
 **Errors:**
-- `400` — `"invalid deck id"`
-- `401` — `"unauthorized"`
-- `403` — `"forbidden"`
-- `404` — `"card not found"`
+- `400` - `"invalid deck id"`
+- `401` - `"unauthorized"`
+- `403` - `"forbidden"`
+- `404` - `"card not found"`
 
 ---
 
@@ -409,7 +409,7 @@ List all cards in a deck. Deck must be owned by the authenticated user.
 
 Create a new card in a deck.
 
-**Path params:** `id` (uint) — deck ID
+**Path params:** `id` (uint) - deck ID
 
 **Request body (basic card):**
 ```json
@@ -441,9 +441,9 @@ Create a new card in a deck.
 **Response 201:** Card object.
 
 **Errors:**
-- `400` — `"invalid request body"` / `"invalid deck id"` / `"front and back are required"` / `"front must contain at least one cloze deletion"` / `"cloze_index must be greater than 0"`
-- `401` — `"unauthorized"`
-- `403` — `"forbidden"`
+- `400` - `"invalid request body"` / `"invalid deck id"` / `"front and back are required"` / `"front must contain at least one cloze deletion"` / `"cloze_index must be greater than 0"`
+- `401` - `"unauthorized"`
+- `403` - `"forbidden"`
 
 ---
 
@@ -451,15 +451,15 @@ Create a new card in a deck.
 
 Get a specific card. The card's deck must be owned by the authenticated user.
 
-**Path params:** `id` (uint) — card ID
+**Path params:** `id` (uint) - card ID
 
 **Response 200:** Card object.
 
 **Errors:**
-- `400` — `"invalid card id"`
-- `401` — `"unauthorized"`
-- `403` — `"forbidden"`
-- `404` — `"card not found"`
+- `400` - `"invalid card id"`
+- `401` - `"unauthorized"`
+- `403` - `"forbidden"`
+- `404` - `"card not found"`
 
 ---
 
@@ -467,7 +467,7 @@ Get a specific card. The card's deck must be owned by the authenticated user.
 
 Update a card.
 
-**Path params:** `id` (uint) — card ID
+**Path params:** `id` (uint) - card ID
 
 **Request body:**
 ```json
@@ -498,10 +498,10 @@ Type changes are normalized destructively:
 - `cloze` cards always persist `back = ""`
 
 **Errors:**
-- `400` — `"invalid request body"` / `"invalid card id"` / `"front and back are required"` / cloze validation errors
-- `401` — `"unauthorized"`
-- `403` — `"forbidden"`
-- `404` — `"card not found"`
+- `400` - `"invalid request body"` / `"invalid card id"` / `"front and back are required"` / cloze validation errors
+- `401` - `"unauthorized"`
+- `403` - `"forbidden"`
+- `404` - `"card not found"`
 
 ---
 
@@ -509,15 +509,15 @@ Type changes are normalized destructively:
 
 Delete a card.
 
-**Path params:** `id` (uint) — card ID
+**Path params:** `id` (uint) - card ID
 
 **Response:** `204 No Content` (empty body)
 
 **Errors:**
-- `400` — `"invalid card id"`
-- `401` — `"unauthorized"`
-- `403` — `"forbidden"`
-- `404` — `"card not found"`
+- `400` - `"invalid card id"`
+- `401` - `"unauthorized"`
+- `403` - `"forbidden"`
+- `404` - `"card not found"`
 
 ---
 
@@ -525,8 +525,8 @@ Delete a card.
 
 The study system uses the **SM-2 spaced repetition algorithm**. There are two study modes:
 
-- **`spaced`** — Returns cards due for review (where `next_review_at <= now`), sorted by due date.
-- **`random`** — Returns all cards in the deck in random order.
+- **`spaced`** - Returns cards due for review (where `next_review_at <= now`), sorted by due date.
+- **`random`** - Returns all cards in the deck in random order.
 
 After viewing a card, submit a quality rating to update the card's scheduling parameters.
 
@@ -534,7 +534,7 @@ After viewing a card, submit a quality rating to update the card's scheduling pa
 
 Start a study session for a deck.
 
-**Path params:** `id` (uint) — deck ID
+**Path params:** `id` (uint) - deck ID
 
 **Request body:**
 ```json
@@ -550,10 +550,10 @@ Start a study session for a deck.
 **Response 200:** Array of card objects (the cards to study in this session).
 
 **Errors:**
-- `400` — `"invalid request body"` / `"invalid deck id"` / `"mode is required"` / `"mode must be \"spaced\" or \"random\""`
-- `401` — `"unauthorized"`
-- `403` — `"forbidden"`
-- `404` — `"not found"`
+- `400` - `"invalid request body"` / `"invalid deck id"` / `"mode is required"` / `"mode must be \"spaced\" or \"random\""`
+- `401` - `"unauthorized"`
+- `403` - `"forbidden"`
+- `404` - `"not found"`
 
 ---
 
@@ -561,7 +561,7 @@ Start a study session for a deck.
 
 Submit a quality rating after reviewing a card. Updates the card's SM-2 scheduling parameters (`interval`, `repetitions`, `ease_factor`, `next_review_at`).
 
-**Path params:** `id` (uint) — card ID
+**Path params:** `id` (uint) - card ID
 
 **Request body:**
 ```json
@@ -577,20 +577,20 @@ Submit a quality rating after reviewing a card. Updates the card's SM-2 scheduli
 **Quality scale:**
 | Value | Meaning |
 |---|---|
-| 0 | Complete blackout — no recall at all |
+| 0 | Complete blackout - no recall at all |
 | 1 | Incorrect, but upon seeing the answer it felt familiar |
 | 2 | Incorrect, but the answer seemed easy to recall once seen |
 | 3 | Correct, but required significant effort |
 | 4 | Correct, with some hesitation |
-| 5 | Perfect response — instant recall |
+| 5 | Perfect response - instant recall |
 
 **Response 200:** Card object (with updated scheduling fields).
 
 **Errors:**
-- `400` — `"invalid request body"` / `"invalid card id"` / `"quality is required"` / invalid quality range
-- `401` — `"unauthorized"`
-- `403` — `"forbidden"`
-- `404` — `"not found"`
+- `400` - `"invalid request body"` / `"invalid card id"` / `"quality is required"` / invalid quality range
+- `401` - `"unauthorized"`
+- `403` - `"forbidden"`
+- `404` - `"not found"`
 
 ---
 
@@ -651,8 +651,8 @@ Content-Type: image/png
 **Response 201:** Media object.
 
 **Errors:**
-- `400` — `"request too large or invalid multipart form"` / `"missing form file field 'file'"` / `"unsupported content type: ..."` / `"file too large: ..."`
-- `401` — `"unauthorized"`
+- `400` - `"request too large or invalid multipart form"` / `"missing form file field 'file'"` / `"unsupported content type: ..."` / `"file too large: ..."`
+- `401` - `"unauthorized"`
 
 ---
 
@@ -660,12 +660,12 @@ Content-Type: image/png
 
 Serve a media file directly. No authentication required. Suitable for use in `<img src="...">` or `<audio src="...">` tags.
 
-**Path params:** `id` (string) — media `public_id` token (from the media object returned by upload)
+**Path params:** `id` (string) - media `public_id` token (from the media object returned by upload)
 
 **Response 200:** Raw file bytes with appropriate `Content-Type` and `Cache-Control: public, max-age=31536000, immutable` headers.
 
 **Errors:**
-- `404` — `"media not found"` when the `public_id` does not exist or the physical asset is missing from storage
+- `404` - `"media not found"` when the `public_id` does not exist or the physical asset is missing from storage
 
 ---
 
@@ -673,16 +673,16 @@ Serve a media file directly. No authentication required. Suitable for use in `<i
 
 Delete a media file. Requires authentication. Only the owning user may delete their own files.
 
-**Path params:** `id` (string) — media `public_id` token
+**Path params:** `id` (string) - media `public_id` token
 
 **Response:** `204 No Content` (empty body)
 
 If the record exists, belongs to the authenticated user, but the physical file is already missing from storage, the API still removes the record and returns `204`.
 
 **Errors:**
-- `401` — `"unauthorized"`
-- `403` — `"forbidden"`
-- `404` — `"media not found"`
+- `401` - `"unauthorized"`
+- `403` - `"forbidden"`
+- `404` - `"media not found"`
 
 ---
 
@@ -693,6 +693,6 @@ If the record exists, belongs to the authenticated user, but the physical file i
 3. Optionally **upload media** (images, audio) and embed the returned URLs in card `front`/`back` content.
 4. **Start a study session** (spaced or random mode).
 5. For each card returned, display the front, let the user reveal the back, then **submit a review** with a quality rating.
-6. The backend updates the card's scheduling — the next time a spaced session is started, only due cards appear.
+6. The backend updates the card's scheduling - the next time a spaced session is started, only due cards appear.
 7. **User profile** shows login streak and total points for gamification.
 8. Decks can be made **public** and browsed/upvoted by other users.

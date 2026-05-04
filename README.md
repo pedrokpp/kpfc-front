@@ -1,6 +1,6 @@
 # kpfc Front
 
-Frontend for [kpfc](https://github.com/pedrokpp/kpfc) — an [Anki](https://apps.ankiweb.net)-inspired spaced repetition flashcard platform.
+Frontend for [kpfc](https://github.com/pedrokpp/kpfc) - an [Anki](https://apps.ankiweb.net)-inspired spaced repetition flashcard platform.
 
 Built with [SvelteKit](https://svelte.dev/docs/kit) and [TailwindCSS](https://tailwindcss.com). Licensed under the [MIT License](LICENSE).
 
@@ -71,8 +71,8 @@ Output goes to `build/`. Serve as a static site with any HTTP server.
 1. **Register** or **log in** at `/login`
 2. Go to **My Decks** (`/dashboard`) to create and manage your decks
 3. Open a deck to **add, edit, or delete cards**
-4. Click **Study** to start a session — choose *Spaced Repetition* (cards due today) or *Random Practice* (all cards, shuffled)
-5. After revealing each card, rate your recall from 0 to 5 — the SM-2 algorithm schedules the next review
+4. Click **Study** to start a session - choose *Spaced Repetition* (cards due today) or *Random Practice* (all cards, shuffled)
+5. After revealing each card, rate your recall from 0 to 5 - the SM-2 algorithm schedules the next review
 6. Check your **streak and points** at `/profile`
 7. Browse community decks at `/explore` and upvote your favorites
 
@@ -116,7 +116,7 @@ chore:    maintenance, tooling, dependencies
 ### Guidelines
 
 - Do not add runtime dependencies without discussion
-- Keep components focused — one responsibility per file
+- Keep components focused - one responsibility per file
 - All code, comments, and documentation in English
 - Credit third-party tools with markdown links on first mention
 
