@@ -2,7 +2,6 @@
 	import { goto } from '$app/navigation';
 	import { auth } from '$lib/stores/auth';
 	import { toasts } from '$lib/stores/toast';
-	import { authApi } from '$lib/api/auth';
 	import { t } from '$lib/i18n';
 	import Input from '$lib/components/ui/Input.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
@@ -23,10 +22,7 @@
 		error = '';
 		loading = true;
 		try {
-			await authApi.register(email, password, displayName || undefined);
-			// Auto-login after register
-			const res = await authApi.login(email, password);
-			auth.login(res.token, res.user);
+			await auth.registerAndLogin(email, password, displayName || undefined);
 			toasts.success($t('auth.accountCreatedToast'));
 			goto('/dashboard');
 		} catch (err) {

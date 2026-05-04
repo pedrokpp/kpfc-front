@@ -1,5 +1,5 @@
 import { browser } from '$app/environment';
-import { goto } from '$app/navigation';
+import { auth } from '$lib/stores/auth';
 import type { ApiError } from '$lib/types';
 
 export const BASE_URL = browser
@@ -7,7 +7,7 @@ export const BASE_URL = browser
 	: 'http://localhost:8080/api/v1';
 
 function getToken(): string | null {
-	return browser ? localStorage.getItem('token') : null;
+	return browser ? auth.getToken() : null;
 }
 
 function authHeaders(): HeadersInit {
@@ -17,11 +17,7 @@ function authHeaders(): HeadersInit {
 
 async function handleResponse<T>(res: Response): Promise<T> {
 	if (res.status === 401) {
-		if (browser) {
-			localStorage.removeItem('token');
-			localStorage.removeItem('user');
-			goto('/login');
-		}
+		if (browser) auth.handleUnauthorized();
 		throw new Error('Unauthorized');
 	}
 

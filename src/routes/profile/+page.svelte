@@ -3,7 +3,6 @@
 	import { goto } from '$app/navigation';
 	import { auth } from '$lib/stores/auth';
 	import { toasts } from '$lib/stores/toast';
-	import { usersApi } from '$lib/api/users';
 	import { t } from '$lib/i18n';
 	import Input from '$lib/components/ui/Input.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
@@ -20,8 +19,7 @@
 		e.preventDefault();
 		loading = true;
 		try {
-			const user = await usersApi.update(displayName);
-			auth.updateUser(user);
+			await auth.updateDisplayName(displayName);
 			editing = false;
 			toasts.success($t('profile.updated'));
 		} catch (err) {

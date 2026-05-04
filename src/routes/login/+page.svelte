@@ -2,7 +2,6 @@
 	import { goto } from '$app/navigation';
 	import { auth } from '$lib/stores/auth';
 	import { toasts } from '$lib/stores/toast';
-	import { authApi } from '$lib/api/auth';
 	import { t } from '$lib/i18n';
 	import Input from '$lib/components/ui/Input.svelte';
 	import Button from '$lib/components/ui/Button.svelte';
@@ -22,8 +21,7 @@
 		error = '';
 		loading = true;
 		try {
-			const res = await authApi.login(email, password);
-			auth.login(res.token, res.user);
+			await auth.login(email, password);
 			toasts.success($t('auth.welcomeBackToast'));
 			goto('/dashboard');
 		} catch (err) {

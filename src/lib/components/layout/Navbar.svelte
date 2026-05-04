@@ -8,7 +8,6 @@
 	function handleLogout() {
 		auth.logout();
 		toasts.info($t('auth.loggedOutToast'));
-		goto('/login');
 	}
 </script>
 
