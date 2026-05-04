@@ -81,7 +81,7 @@
 	}
 </script>
 
-<svelte:head><title>{$deckDetail.deck?.title ?? 'Deck'} — kpfc</title></svelte:head>
+<svelte:head><title>{$deckDetail.deck?.title ?? 'Deck'} - kpfc</title></svelte:head>
 
 {#if $deckDetail.loading}
 	<div class="flex flex-col gap-4">

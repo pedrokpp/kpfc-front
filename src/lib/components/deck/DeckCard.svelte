@@ -7,23 +7,66 @@
 		deck: Deck;
 		onedit?: () => void;
 		ondelete?: () => void;
+		onupvote?: () => void;
+		upvoting?: boolean;
+		clickable?: boolean;
+		surface?: 'background' | 'surface';
+		showCreatedAt?: boolean;
+		showUpvoteCount?: boolean;
 	}
 
-	let { deck, onedit, ondelete }: Props = $props();
+	let {
+		deck,
+		onedit,
+		ondelete,
+		onupvote,
+		upvoting = false,
+		clickable = true,
+		surface = 'background',
+		showCreatedAt = false,
+		showUpvoteCount = !!onupvote
+	}: Props = $props();
+
+	function openDeck() {
+		if (!clickable) return;
+		goto(`/decks/${deck.id}`);
+	}
+
+	const showInlineActions = $derived(!showUpvoteCount && !!(onedit || ondelete));
 </script>
 
-<article
-	onclick={() => goto(`/decks/${deck.id}`)}
-	role="link"
-	tabindex="0"
-	onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') goto(`/decks/${deck.id}`); }}
-	class="group bg-background border border-secondary/20 rounded-xl p-5 flex flex-col gap-3 hover:border-secondary/40 transition-colors cursor-pointer"
+<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+<div
+	class="group relative flex flex-col gap-3 rounded-xl border border-secondary/20 {surface === 'surface' ? 'bg-surface' : 'bg-background'} p-5 transition-colors hover:border-secondary/40 {clickable ? 'cursor-pointer' : ''}"
+	role={clickable ? 'button' : undefined}
+	tabindex={clickable ? 0 : undefined}
+	onclick={openDeck}
+	onkeydown={(e) => {
+		if (!clickable) return;
+		if (e.key === 'Enter' || e.key === ' ') {
+			e.preventDefault();
+			openDeck();
+		}
+	}}
 >
 	<div class="flex items-start justify-between gap-2">
 		<div class="flex flex-col gap-1 min-w-0">
-			<a href="/decks/{deck.id}" onclick={(e) => e.stopPropagation()} class="font-semibold text-text hover:text-primary transition-colors truncate">
-				{deck.title}
-			</a>
+			{#if clickable}
+				<button
+					type="button"
+					onclick={(e) => {
+						e.stopPropagation();
+						openDeck();
+					}}
+					class="truncate text-left font-semibold text-text transition-colors hover:text-primary"
+				>
+					{deck.title}
+				</button>
+			{:else}
+				<p class="truncate text-left font-semibold text-text">
+					{deck.title}
+				</p>
+			{/if}
 			{#if deck.description}
 				<p class="text-sm text-text/50 line-clamp-2">{deck.description}</p>
 			{/if}
@@ -33,43 +76,69 @@
 		{/if}
 	</div>
 
-	<div class="flex items-center justify-between mt-auto">
-		<div class="flex items-center gap-3 text-xs text-text/40">
-			{#if deck.is_public}
-				<span class="flex items-center gap-1">
-					<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-						<path d="M7 10v12M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/>
-					</svg>
-					{deck.upvote_count}
-				</span>
+	<div class="relative mt-auto min-h-7">
+		<div class="flex h-7 items-center justify-between">
+			<div class="flex items-center gap-3 text-xs text-text/40">
+			{#if deck.is_public && showUpvoteCount}
+				{#if onupvote}
+					<button
+						type="button"
+						onclick={(e) => {
+							e.stopPropagation();
+							onupvote?.();
+						}}
+						disabled={upvoting}
+						aria-label={$t('explore.upvoteDeck')}
+						class="flex items-center gap-1 text-xs text-text/40 transition-colors hover:text-accent disabled:opacity-50"
+					>
+						<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<path d="M7 10v12M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/>
+						</svg>
+						{deck.upvote_count}
+					</button>
+				{:else}
+					<span class="flex items-center gap-1">
+						<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<path d="M7 10v12M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/>
+						</svg>
+						{deck.upvote_count}
+					</span>
+				{/if}
+			{/if}
+
+			{#if showInlineActions}
+				<div class="flex items-center gap-1">
+					{#if onedit}
+						<button
+							type="button"
+							onclick={(e) => { e.stopPropagation(); onedit?.(); }}
+							aria-label={$t('deckCard.editDeck')}
+							class="p-1.5 rounded-md text-text/40 hover:text-text hover:bg-secondary/20 transition-colors"
+						>
+							<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+							</svg>
+						</button>
+					{/if}
+					{#if ondelete}
+						<button
+							type="button"
+							onclick={(e) => { e.stopPropagation(); ondelete?.(); }}
+							aria-label={$t('deckCard.deleteDeck')}
+							class="p-1.5 rounded-md text-text/40 hover:text-accent hover:bg-accent/10 transition-colors"
+						>
+							<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+							</svg>
+						</button>
+					{/if}
+				</div>
+			{/if}
+			</div>
+
+			{#if showCreatedAt}
+				<span class="text-xs text-text/30">{new Date(deck.created_at).toLocaleDateString()}</span>
 			{/if}
 		</div>
-
-		{#if onedit || ondelete}
-			<div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-				{#if onedit}
-					<button
-						onclick={(e) => { e.stopPropagation(); onedit?.(); }}
-						aria-label={$t('deckCard.editDeck')}
-						class="p-1.5 rounded-md text-text/40 hover:text-text hover:bg-secondary/20 transition-colors"
-					>
-						<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-							<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
-						</svg>
-					</button>
-				{/if}
-				{#if ondelete}
-					<button
-						onclick={(e) => { e.stopPropagation(); ondelete?.(); }}
-						aria-label={$t('deckCard.deleteDeck')}
-						class="p-1.5 rounded-md text-text/40 hover:text-accent hover:bg-accent/10 transition-colors"
-					>
-						<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-							<path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
-						</svg>
-					</button>
-				{/if}
-			</div>
-		{/if}
 	</div>
-</article>
+</div>

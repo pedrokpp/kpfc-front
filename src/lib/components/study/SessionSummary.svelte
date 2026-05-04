@@ -13,7 +13,7 @@
 	const avg = $derived(
 		reviews.length > 0
 			? (reviews.reduce((s, r) => s + r.quality, 0) / reviews.length).toFixed(1)
-			: '—'
+			: '-'
 	);
 
 	const good = $derived(reviews.filter((r) => r.quality >= 3).length);

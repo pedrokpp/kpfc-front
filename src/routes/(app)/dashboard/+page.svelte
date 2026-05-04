@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { authSession as auth } from '$lib/modules/auth-session';
 	import { toasts } from '$lib/stores/toast';
 	import { createUserDecksModule } from '$lib/modules/user-decks';
 	import { t } from '$lib/i18n';
@@ -16,6 +15,18 @@
 	let showCreate = $state(false);
 	let editingDeck = $state<Deck | null>(null);
 	let deletingDeck = $state<Deck | null>(null);
+	let sort = $state<'updated' | 'title'>('updated');
+
+	const sortedDecks = $derived.by(() => {
+		const decks = [...$userDecks.decks];
+		if (sort === 'title') {
+			return decks.sort((a, b) => a.title.localeCompare(b.title));
+		}
+
+		return decks.sort(
+			(a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+		);
+	});
 
 	onMount(async () => {
 		try {
@@ -58,19 +69,15 @@
 	}
 </script>
 
-<svelte:head><title>{$t('dashboard.title')} — kpfc</title></svelte:head>
+<svelte:head><title>{$t('dashboard.title')} - kpfc</title></svelte:head>
 
 <div class="flex flex-col gap-6">
-	<div class="flex items-center justify-between">
-		<div>
-			<h1 class="text-xl font-bold text-text">{$t('dashboard.title')}</h1>
-			{#if $auth.user}
-				<p class="text-sm text-text/50 mt-0.5">
-					{$auth.user.login_streak} {$t('dashboard.dayStreak')} &middot; {$auth.user.total_points} {$t('dashboard.pts')}
-				</p>
-			{/if}
+	<div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+		<div class="flex flex-col gap-2">
+			<h1 class="text-3xl font-bold tracking-[-0.04em] text-primary">{$t('dashboard.title')}</h1>
+			<p class="text-sm text-text/58">{$t('dashboard.description')}</p>
 		</div>
-		<Button onclick={() => (showCreate = true)}>
+		<Button onclick={() => (showCreate = true)} class="shrink-0">
 			<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
 				<path d="M5 12h14M12 5v14"/>
 			</svg>
@@ -78,26 +85,52 @@
 		</Button>
 	</div>
 
+	<div class="flex items-center justify-between flex-wrap gap-3">
+		<div class="text-xs uppercase tracking-[0.24em] text-text/45">
+			{$userDecks.loading
+				? $t('dashboard.loadingDecks')
+				: $t('dashboard.deckCount', { count: $userDecks.decks.length })}
+		</div>
+		<div class="flex items-center gap-1 text-sm">
+			<button
+				onclick={() => (sort = 'updated')}
+				class="rounded-full px-3 py-1.5 transition-colors {sort === 'updated' ? 'bg-primary text-background' : 'text-text/60 hover:bg-secondary/14 hover:text-text'}"
+			>
+				{$t('dashboard.recent')}
+			</button>
+			<button
+				onclick={() => (sort = 'title')}
+				class="rounded-full px-3 py-1.5 transition-colors {sort === 'title' ? 'bg-primary text-background' : 'text-text/60 hover:bg-secondary/14 hover:text-text'}"
+			>
+				{$t('dashboard.alphabetical')}
+			</button>
+		</div>
+	</div>
+
 	{#if $userDecks.loading}
-		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+		<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
 			{#each Array(3) as _}
-				<div class="h-28 rounded-xl bg-secondary/10 animate-pulse"></div>
+				<div class="h-32 rounded-[1.6rem] border border-secondary/18 bg-surface animate-pulse"></div>
 			{/each}
 		</div>
 	{:else if $userDecks.decks.length === 0}
-		<EmptyState
-			title={$t('dashboard.noDecksTitle')}
-			description={$t('dashboard.noDecksDesc')}
-		>
-			{#snippet children()}
-				<Button onclick={() => (showCreate = true)}>{$t('dashboard.createDeck')}</Button>
-			{/snippet}
-		</EmptyState>
+		<section class="rounded-[1.8rem] border border-secondary/18 bg-surface px-6 py-8 shadow-[0_18px_50px_rgba(18,32,51,0.05)] sm:px-7">
+			<EmptyState
+				title={$t('dashboard.noDecksTitle')}
+				description={$t('dashboard.noDecksDesc')}
+			>
+				{#snippet children()}
+					<Button onclick={() => (showCreate = true)}>{$t('dashboard.createDeck')}</Button>
+				{/snippet}
+			</EmptyState>
+		</section>
 	{:else}
-		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-			{#each $userDecks.decks as deck (deck.id)}
+		<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+			{#each sortedDecks as deck (deck.id)}
 				<DeckCard
 					{deck}
+					surface="surface"
+					showCreatedAt={true}
 					onedit={() => (editingDeck = deck)}
 					ondelete={() => (deletingDeck = deck)}
 				/>

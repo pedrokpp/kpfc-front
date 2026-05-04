@@ -30,6 +30,7 @@
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby="modal-title"
+		tabindex="-1"
 		onkeydown={handleKeydown}
 		class="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
 	>

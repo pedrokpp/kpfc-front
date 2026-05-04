@@ -3,6 +3,8 @@
 @theme {
   --color-text: var(--text);
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-muted: var(--muted);
   --color-primary: var(--primary);
   --color-secondary: var(--secondary);
   --color-accent: var(--accent);
@@ -11,26 +13,48 @@
 
 @layer base {
   :root {
-    --text: #101123;
-    --background: #edeef7;
-    --primary: #282a5d;
-    --secondary: #bd8dce;
-    --accent: #9e46a4;
+    --text: #150b19;
+    --background: #f7f0f9;
+    --surface: #fdf7fe;
+    --muted: #eadbf0;
+    --primary: #54256a;
+    --secondary: #be88d7;
+    --accent: #8634ad;
   }
 
   .dark {
-    --text: #dddef0;
-    --background: #080912;
-    --primary: #a1a3d7;
-    --secondary: #603171;
-    --accent: #b159b8;
+    --text: #f0e6f4;
+    --background: #0b050d;
+    --surface: #140a18;
+    --muted: #24112c;
+    --primary: #c394d9;
+    --secondary: #5d2776;
+    --accent: #a654cc;
   }
 
   * {
-    @apply border-secondary/30;
+    @apply border-secondary/25;
+  }
+
+  html {
+    scroll-behavior: smooth;
   }
 
   body {
-    @apply bg-background text-text transition-colors duration-200;
+    background:
+      radial-gradient(circle at top left, color-mix(in oklab, var(--secondary) 24%, transparent), transparent 36%),
+      radial-gradient(circle at top right, color-mix(in oklab, var(--accent) 16%, transparent), transparent 28%),
+      var(--background);
+    @apply min-h-screen text-text transition-colors duration-200;
+    font-family: 'Go Mono', monospace;
+  }
+
+  ::selection {
+    @apply bg-accent/20 text-text;
+  }
+
+  a,
+  button {
+    @apply cursor-pointer;
   }
 }
